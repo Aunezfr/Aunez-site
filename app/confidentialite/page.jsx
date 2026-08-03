@@ -16,10 +16,8 @@ export default function Confidentialite() {
         <h2 style={styles.h2}>Données collectées</h2>
         <p style={styles.p}>
           Le quiz olfactif fonctionne entièrement dans votre navigateur :
-          vos réponses ne sont pas enregistrées sur nos serveurs. Si vous
-          renseignez votre email pour la newsletter, cette adresse est
-          collectée uniquement dans le but de vous informer des nouveautés
-          d'Aunez, et n'est jamais revendue à des tiers.
+          vos réponses ne sont pas enregistrées sur nos serveurs. Aunez ne
+          collecte actuellement aucune donnée personnelle.
         </p>
 
         <h2 style={styles.h2}>Cookies</h2>
@@ -41,7 +39,8 @@ export default function Confidentialite() {
         <p style={styles.p}>
           Conformément au RGPD, vous disposez d'un droit d'accès, de
           rectification et de suppression des données vous concernant.
-          Pour toute demande, contactez [adresse email à compléter].
+          Le site ne collectant actuellement aucune donnée personnelle,
+          cette section sera complétée si cela évolue.
         </p>
 
         <p style={styles.note}>
