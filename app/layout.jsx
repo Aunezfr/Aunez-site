@@ -1,3 +1,8 @@
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
+
 export const metadata = {
   metadataBase: new URL("https://aunez.fr"),
   title: "Aunez — Trouve ton profil de parfum",
