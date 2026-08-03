@@ -585,9 +585,14 @@ export default function App() {
           </div>
         )}
       </div>
-      <a href="/a-propos" style={styles.footerLink}>
-        Pourquoi Aunez ?
-      </a>
+      <div style={styles.footerLinks}>
+        <a href="/a-propos" style={styles.footerLink}>
+          Pourquoi Aunez ?
+        </a>
+        <a href="/histoire" style={styles.footerLink}>
+          Histoire du parfum
+        </a>
+      </div>
     </div>
   );
 }
@@ -641,12 +646,18 @@ const styles = {
   footerLink: {
     position: "relative",
     zIndex: 1,
-    marginTop: 18,
     fontFamily: "'Helvetica Neue', Arial, sans-serif",
     fontSize: 12,
     color: "rgba(245,240,230,0.4)",
     textDecoration: "none",
     letterSpacing: "0.04em",
+  },
+  footerLinks: {
+    position: "relative",
+    zIndex: 1,
+    display: "flex",
+    gap: 20,
+    marginTop: 18,
   },
   center: { textAlign: "center" },
   eyebrow: {
