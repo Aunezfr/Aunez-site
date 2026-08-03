@@ -6,6 +6,7 @@ import Link from "next/link";
 const PAGES = [
   {
     era: "Antiquité",
+    short: "Antiquité",
     period: "env. 3000 av. J.-C.",
     title: "Les origines",
     text: "Le parfum naît en Mésopotamie et en Égypte ancienne, où l'on brûle des résines et des bois odorants pour les rituels religieux — le mot \"parfum\" vient du latin per fumum, \"par la fumée\". Les Égyptiens l'associent aussi à la beauté et à l'embaumement.",
@@ -14,6 +15,7 @@ const PAGES = [
   },
   {
     era: "Monde arabe",
+    short: "Monde arabe",
     period: "env. l'an 1000",
     title: "La révolution technique",
     text: "Le médecin et savant perse Avicenne perfectionne la distillation à la vapeur, permettant d'extraire l'essence pure des fleurs — notamment la rose. Une avancée décisive qui rendra possible la parfumerie moderne.",
@@ -22,6 +24,7 @@ const PAGES = [
   },
   {
     era: "Grasse, France",
+    short: "Grasse",
     period: "XVIe – XVIIIe siècle",
     title: "La naissance d'une capitale",
     text: "Grâce à son climat et ses champs de fleurs, la ville de Grasse devient le cœur mondial de la parfumerie. Les \"nez\" y perfectionnent leur art, d'abord pour parfumer les gants des aristocrates.",
@@ -30,6 +33,7 @@ const PAGES = [
   },
   {
     era: "XIXe siècle",
+    short: "XIXe s.",
     period: "1889",
     title: "L'ère de la chimie",
     text: "L'invention des molécules de synthèse libère les parfumeurs des seules matières naturelles. Guerlain lance Jicky, considéré comme le premier grand parfum moderne, mêlant naturel et synthétique.",
@@ -38,6 +42,7 @@ const PAGES = [
   },
   {
     era: "XXe siècle",
+    short: "XXe s.",
     period: "1921",
     title: "L'âge d'or des maisons",
     text: "Chanel N°5 marque l'entrée du parfum dans la culture de masse et le luxe. Les grandes maisons de couture — Dior, Chanel, Yves Saint Laurent — dominent le marché pendant des décennies.",
@@ -46,6 +51,7 @@ const PAGES = [
   },
   {
     era: "Depuis les années 1990",
+    short: "Aujourd'hui",
     period: "aujourd'hui",
     title: "Le retour du sur-mesure",
     text: "Fatigués de l'uniformisation, des créateurs indépendants fondent la parfumerie de niche : moins de compromis marketing, plus de liberté artistique. C'est le mouvement dans lequel s'inscrit une partie de l'esprit d'Aunez.",
@@ -167,6 +173,45 @@ function Illustration({ name, color }) {
   );
 }
 
+function Timeline({ index, onJump }) {
+  return (
+    <div style={styles.timelineWrap}>
+      <div style={styles.timelineLine} />
+      <div style={styles.timelineRow}>
+        {PAGES.map((pg, i) => {
+          const state = i === index ? "current" : i < index ? "done" : "upcoming";
+          return (
+            <button
+              key={i}
+              onClick={() => onJump(i)}
+              style={styles.timelineItem}
+              aria-label={pg.short}
+            >
+              <div
+                style={{
+                  ...styles.timelineDot,
+                  background: state === "upcoming" ? "transparent" : "#c9932f",
+                  borderColor: "#c9932f",
+                  transform: state === "current" ? "scale(1.5)" : "scale(1)",
+                }}
+              />
+              <div
+                style={{
+                  ...styles.timelineLabel,
+                  opacity: state === "upcoming" ? 0.4 : 1,
+                  fontWeight: state === "current" ? 600 : 400,
+                }}
+              >
+                {pg.short}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function PageContent({ p, m, onPrev, onNext, canPrev, canNext }) {
   return (
     <>
@@ -200,9 +245,9 @@ export default function HistoireDuParfum() {
   const [dir, setDir] = useState(1);
   const [nextIndex, setNextIndex] = useState(null);
 
-  function go(delta) {
-    const target = index + delta;
-    if (target < 0 || target >= PAGES.length || flipping) return;
+  function jump(target) {
+    if (target < 0 || target >= PAGES.length || target === index || flipping) return;
+    const delta = target > index ? 1 : -1;
     setDir(delta);
     setNextIndex(target);
     setFlipping(true);
@@ -211,6 +256,10 @@ export default function HistoireDuParfum() {
       setFlipping(false);
       setNextIndex(null);
     }, 420);
+  }
+
+  function go(delta) {
+    jump(index + delta);
   }
 
   const current = PAGES[index];
@@ -228,6 +277,8 @@ export default function HistoireDuParfum() {
 
         <div style={styles.eyebrow}>Histoire du parfum</div>
 
+        <Timeline index={flipping && nextIndex !== null ? nextIndex : index} onJump={jump} />
+
         <div style={styles.stage}>
           <div style={styles.bookShell}>
             {below && (
@@ -242,7 +293,7 @@ export default function HistoireDuParfum() {
                   WebkitBackdropFilter: belowM.glass ? "blur(22px)" : "none",
                 }}
               >
-                <PageContent p={below} m={belowM} />
+                <PageContent p={below} m={belowM} canPrev={false} canNext={false} />
               </div>
             )}
             <div
@@ -267,7 +318,14 @@ export default function HistoireDuParfum() {
                 zIndex: 2,
               }}
             >
-              <PageContent p={current} m={currentM} onPrev={() => go(-1)} onNext={() => go(1)} canPrev={index > 0} canNext={index < PAGES.length - 1} />
+              <PageContent
+                p={current}
+                m={currentM}
+                onPrev={() => go(-1)}
+                onNext={() => go(1)}
+                canPrev={index > 0}
+                canNext={index < PAGES.length - 1}
+              />
             </div>
           </div>
 
@@ -338,6 +396,50 @@ const styles = {
     color: "#c9932f",
     marginBottom: 22,
   },
+  timelineWrap: {
+    position: "relative",
+    marginBottom: 30,
+  },
+  timelineLine: {
+    position: "absolute",
+    top: 5,
+    left: 0,
+    right: 0,
+    height: 1,
+    background: "rgba(245,240,230,0.15)",
+  },
+  timelineRow: {
+    position: "relative",
+    display: "flex",
+    justifyContent: "space-between",
+    gap: 4,
+  },
+  timelineItem: {
+    background: "transparent",
+    border: "none",
+    cursor: "pointer",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    padding: 0,
+    flex: 1,
+  },
+  timelineDot: {
+    width: 7,
+    height: 7,
+    borderRadius: "50%",
+    border: "1px solid #c9932f",
+    transition: "transform 0.2s ease, background 0.2s ease",
+    marginBottom: 8,
+  },
+  timelineLabel: {
+    fontFamily: "'Helvetica Neue', Arial, sans-serif",
+    fontSize: 10,
+    letterSpacing: "0.02em",
+    color: "#f5f0e6",
+    textAlign: "center",
+    lineHeight: 1.2,
+  },
   stage: { perspective: "1600px" },
   bookShell: {
     position: "relative",
@@ -359,12 +461,6 @@ const styles = {
     position: "absolute",
     inset: 0,
     pointerEvents: "none",
-  },
-  fold: {
-    position: "absolute",
-    inset: 0,
-    pointerEvents: "none",
-    transition: "opacity 0.3s ease",
   },
   iconWrap: { marginBottom: 14, position: "relative", display: "inline-block" },
   iconZone: {
