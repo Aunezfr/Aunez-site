@@ -374,10 +374,9 @@ const styles = {
     background: "#08070c",
     display: "flex",
     justifyContent: "center",
-    padding: "24px",
+    padding: "48px 24px",
     fontFamily: "'Georgia', 'Iowan Old Style', serif",
     position: "relative",
-    overflow: "hidden",
   },
   vignette: {
     position: "absolute",
