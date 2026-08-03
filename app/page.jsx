@@ -378,6 +378,9 @@ export default function App() {
   const [scanIndex, setScanIndex] = useState(0);
   const [openReco, setOpenReco] = useState(null);
   const [genrePref, setGenrePref] = useState(null);
+  const [shareLabel, setShareLabel] = useState("Partager mon résultat");
+  const [newsletterState, setNewsletterState] = useState("idle");
+  const [email, setEmail] = useState("");
 
   const totalSteps = QUESTIONS.length;
 
@@ -415,6 +418,41 @@ export default function App() {
     setScores({ floral: 0, boise: 0, oriental: 0, frais: 0 });
     setGenrePref(null);
     setStep(-1);
+  }
+
+  async function handleShare() {
+    const shareData = {
+      title: "Aunez — Mon profil de parfum",
+      text: `Mon profil olfactif sur Aunez : ${FAMILLES[top].label}. Découvre le tien !`,
+      url: typeof window !== "undefined" ? window.location.href : "https://aunez.fr",
+    };
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(shareData.url);
+        setShareLabel("Lien copié !");
+        setTimeout(() => setShareLabel("Partager mon résultat"), 2000);
+      }
+    } catch (e) {
+      // partage annulé par la personne, on ne fait rien
+    }
+  }
+
+  async function handleNewsletterSubmit(e) {
+    e.preventDefault();
+    if (!email) return;
+    setNewsletterState("sending");
+    try {
+      const res = await fetch("https://formspree.io/f/VOTRE_ID_FORMSPREE", {
+        method: "POST",
+        headers: { Accept: "application/json" },
+        body: new FormData(e.target),
+      });
+      setNewsletterState(res.ok ? "success" : "error");
+    } catch (err) {
+      setNewsletterState("error");
+    }
   }
 
   const total = Object.values(scores).reduce((a, b) => a + b, 0) || 1;
@@ -582,16 +620,67 @@ export default function App() {
               <button style={styles.secondaryBtn} onClick={restart}>
                 Refaire le quiz
               </button>
+              <button style={styles.shareBtn} onClick={handleShare}>
+                {shareLabel}
+              </button>
+            </div>
+            <div style={styles.affiliateNote}>
+              Certains liens ci-dessus sont des liens affiliés. Si tu
+              achètes via l'un d'eux, Aunez touche une petite commission,
+              sans surcoût pour toi.
             </div>
           </div>
         )}
       </div>
+      <div style={styles.newsletterBox}>
+        <div style={styles.newsletterTitle}>Sois prévenu·e des nouveautés</div>
+        <div style={styles.newsletterText}>
+          Nouveaux profils, nouveaux parfums de niche, sans spam.
+        </div>
+        {newsletterState === "success" ? (
+          <div style={styles.newsletterSuccess}>Merci, c'est noté !</div>
+        ) : (
+          <form onSubmit={handleNewsletterSubmit} style={styles.newsletterForm}>
+            <input
+              type="email"
+              name="email"
+              required
+              placeholder="ton@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              style={styles.newsletterInput}
+            />
+            <button
+              type="submit"
+              disabled={newsletterState === "sending"}
+              style={styles.newsletterBtn}
+            >
+              {newsletterState === "sending" ? "..." : "S'inscrire"}
+            </button>
+          </form>
+        )}
+        {newsletterState === "error" && (
+          <div style={styles.newsletterError}>
+            Un souci est survenu, réessaie plus tard.
+          </div>
+        )}
+      </div>
+
       <div style={styles.footerLinks}>
         <a href="/a-propos" style={styles.footerLink}>
           Pourquoi Aunez ?
         </a>
         <a href="/histoire" style={styles.footerLink}>
           Histoire du parfum
+        </a>
+      </div>
+      <div style={styles.legalLinks}>
+        <a href="/mentions-legales" style={styles.legalLink}>
+          Mentions légales
+        </a>
+        <span style={styles.legalDot}>·</span>
+        <a href="/confidentialite" style={styles.legalLink}>
+          Confidentialité
         </a>
       </div>
     </div>
@@ -659,6 +748,105 @@ const styles = {
     display: "flex",
     gap: 20,
     marginTop: 18,
+  },
+  legalLinks: {
+    position: "relative",
+    zIndex: 1,
+    display: "flex",
+    alignItems: "center",
+    gap: 8,
+    marginTop: 14,
+  },
+  legalLink: {
+    fontFamily: "'Helvetica Neue', Arial, sans-serif",
+    fontSize: 11,
+    color: "rgba(245,240,230,0.28)",
+    textDecoration: "none",
+  },
+  legalDot: { color: "rgba(245,240,230,0.2)", fontSize: 11 },
+  shareBtn: {
+    display: "block",
+    fontFamily: "'Helvetica Neue', Arial, sans-serif",
+    background: "transparent",
+    color: "#c9932f",
+    border: "none",
+    fontSize: 12.5,
+    letterSpacing: "0.04em",
+    cursor: "pointer",
+    margin: "14px auto 0",
+    textDecoration: "underline",
+  },
+  affiliateNote: {
+    fontFamily: "'Helvetica Neue', Arial, sans-serif",
+    fontSize: 11,
+    lineHeight: 1.6,
+    color: "rgba(245,240,230,0.4)",
+    textAlign: "center",
+    marginTop: 22,
+    paddingTop: 16,
+    borderTop: "1px solid rgba(245,240,230,0.08)",
+  },
+  newsletterBox: {
+    position: "relative",
+    zIndex: 1,
+    width: "100%",
+    maxWidth: 480,
+    marginTop: 24,
+    background: "rgba(245,240,230,0.04)",
+    border: "1px solid rgba(245,240,230,0.12)",
+    borderRadius: 6,
+    padding: "20px 24px",
+    textAlign: "center",
+  },
+  newsletterTitle: {
+    fontFamily: "'Georgia', serif",
+    fontSize: 15,
+    color: "#f5f0e6",
+    marginBottom: 4,
+  },
+  newsletterText: {
+    fontFamily: "'Helvetica Neue', Arial, sans-serif",
+    fontSize: 12,
+    color: "rgba(245,240,230,0.55)",
+    marginBottom: 14,
+  },
+  newsletterForm: {
+    display: "flex",
+    gap: 8,
+  },
+  newsletterInput: {
+    flex: 1,
+    fontFamily: "'Helvetica Neue', Arial, sans-serif",
+    fontSize: 13,
+    background: "rgba(245,240,230,0.06)",
+    border: "1px solid rgba(245,240,230,0.2)",
+    borderRadius: 3,
+    padding: "10px 12px",
+    color: "#f5f0e6",
+    outline: "none",
+  },
+  newsletterBtn: {
+    fontFamily: "'Helvetica Neue', Arial, sans-serif",
+    background: "#c9932f",
+    color: "#1b1420",
+    border: "none",
+    borderRadius: 3,
+    padding: "10px 16px",
+    fontSize: 12.5,
+    fontWeight: 600,
+    cursor: "pointer",
+    whiteSpace: "nowrap",
+  },
+  newsletterSuccess: {
+    fontFamily: "'Helvetica Neue', Arial, sans-serif",
+    fontSize: 13,
+    color: "#c9932f",
+  },
+  newsletterError: {
+    fontFamily: "'Helvetica Neue', Arial, sans-serif",
+    fontSize: 11,
+    color: "rgba(245,240,230,0.5)",
+    marginTop: 8,
   },
   center: { textAlign: "center" },
   eyebrow: {
