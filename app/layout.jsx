@@ -26,12 +26,15 @@ export default function RootLayout({ children }) {
     <html lang="fr">
       <body style={{ margin: 0 }}>
         <style>{`
+          *, *::before, *::after {
+            box-sizing: border-box;
+          }
           html, body {
             margin: 0;
             padding: 0;
+            max-width: 100%;
             overflow-x: hidden;
             overscroll-behavior: none;
-            width: 100%;
           }
         `}</style>
         {children}
