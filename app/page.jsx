@@ -449,8 +449,9 @@ export default function App() {
             <div style={styles.eyebrow}>Quiz olfactif</div>
             <h1 style={styles.h1}>Quel est ton profil de parfum ?</h1>
             <p style={styles.lead}>
-              Quatre questions pour révéler ta signature olfactive, avant de
-              découvrir des parfums de niche taillés pour toi.
+              Une odeur ne s'hérite pas, elle se choisit. Tes réponses
+              dessinent ton histoire — et révèlent l'odeur qui te
+              ressemble vraiment.
             </p>
             <button style={styles.primaryBtn} onClick={() => setStep(0)}>
               Commencer
