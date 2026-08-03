@@ -177,7 +177,7 @@ function Timeline({ index, onJump }) {
   return (
     <div style={styles.timelineWrap}>
       <div style={styles.timelineLine} />
-      <div style={styles.timelineRow}>
+      <div style={styles.timelineRow} className="aunez-timeline">
         {PAGES.map((pg, i) => {
           const state = i === index ? "current" : i < index ? "done" : "upcoming";
           return (
@@ -196,6 +196,7 @@ function Timeline({ index, onJump }) {
                 }}
               />
               <div
+                className="aunez-timeline-label"
                 style={{
                   ...styles.timelineLabel,
                   opacity: state === "upcoming" ? 0.4 : 1,
@@ -232,7 +233,7 @@ function PageContent({ p, m, onPrev, onNext, canPrev, canNext }) {
         />
       </div>
       <div style={{ ...styles.period, color: m.accent }}>{p.period}</div>
-      <h2 style={{ ...styles.era, color: m.accent }}>{p.era}</h2>
+      <h2 style={{ ...styles.era, color: m.accent }} className="aunez-era">{p.era}</h2>
       <div style={{ ...styles.title, color: m.color }}>{p.title}</div>
       <p style={{ ...styles.text, color: m.color }}>{p.text}</p>
     </>
@@ -269,6 +270,14 @@ export default function HistoireDuParfum() {
 
   return (
     <div style={styles.page}>
+      <style>{`
+        @media (max-width: 420px) {
+          .aunez-book { padding: 26px 18px !important; }
+          .aunez-era { font-size: 19px !important; }
+          .aunez-timeline-label { font-size: 8.5px !important; }
+          .aunez-timeline { gap: 0 !important; }
+        }
+      `}</style>
       <div style={styles.vignette} />
       <div style={styles.wrap}>
         <Link href="/" style={styles.back}>
@@ -283,6 +292,7 @@ export default function HistoireDuParfum() {
           <div style={styles.bookShell}>
             {below && (
               <div
+                className="aunez-book"
                 style={{
                   ...styles.book,
                   ...styles.bookLayer,
@@ -297,6 +307,7 @@ export default function HistoireDuParfum() {
               </div>
             )}
             <div
+              className="aunez-book"
               style={{
                 ...styles.book,
                 ...styles.bookLayer,
