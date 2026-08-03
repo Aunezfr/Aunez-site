@@ -1,6 +1,17 @@
 export const metadata = {
+  metadataBase: new URL("https://aunez.fr"),
   title: "Aunez — Trouve ton profil de parfum",
-  description: "Un quiz olfactif pour découvrir ta signature de parfum et des recommandations de parfums de niche.",
+  description:
+    "Un quiz olfactif pour découvrir ta signature de parfum et des recommandations de parfums de niche, choisies avec honnêteté.",
+  openGraph: {
+    title: "Aunez — Trouve ton profil de parfum",
+    description:
+      "Un quiz olfactif pour découvrir ta signature de parfum et des recommandations de parfums de niche.",
+    url: "https://aunez.fr",
+    siteName: "Aunez",
+    locale: "fr_FR",
+    type: "website",
+  },
 };
 
 export default function RootLayout({ children }) {
