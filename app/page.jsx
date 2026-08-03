@@ -16,7 +16,9 @@ const FAMILLES = {
         marque: "Diptyque",
         accroche: "Un parfum né d'une collaboration entre un parfumeur et une artiste, en hommage au papier",
         histoire: "Diptyque a réuni le parfumeur Fabrice Pellegrin et l'artiste française Alix Waline pour composer ce parfum en hommage au papier, support de l'imaginaire créatif depuis toujours chez la maison. Mimosa, muscs blancs et un accord vapeur de riz forment une fragrance lumineuse, pensée comme une aquarelle olfactive plutôt qu'un parfum classique.",
+        pasFait: "Pas pour toi si tu cherches un floral sucré et gourmand — ici la fleur reste aérienne, presque abstraite, jamais capiteuse.",
         lien: "#",
+        lienEchantillon: "#",
       },
     ],
   },
@@ -31,7 +33,9 @@ const FAMILLES = {
         marque: "Diptyque",
         accroche: "Le souvenir d'enfance d'un des fondateurs de la maison, transformé en parfum",
         histoire: "Yves Coueslant, l'un des fondateurs de Diptyque, n'a jamais oublié l'odeur du bois de santal brûlé dans les temples des forêts sacrées d'Indochine durant son enfance. Tam Dao en est la traduction olfactive : le santal de Mysore, rafraîchi par le cyprès et le myrte, comme une forêt de bois précieux au petit matin.",
+        pasFait: "Pas pour toi si tu veux un boisé discret — Tam Dao a un vrai sillage, on le remarque.",
         lien: "#",
+        lienEchantillon: "#",
       },
     ],
   },
@@ -46,7 +50,9 @@ const FAMILLES = {
         marque: "Diptyque",
         accroche: "Une vanille pensée comme un clair-obscur, entre lumière et épices",
         histoire: "Composée par Fabrice Pellegrin, Eau Duelle explore la vanille Bourbon de Madagascar sous un angle inhabituel : ni sucrée ni évidente, mais traversée d'une dualité entre douceur et épices. Le parfum se construit comme un voyage le long de la route des épices, entre accents lumineux de calamus et nuances plus sombres et fumées de cypriol.",
+        pasFait: "Pas pour toi si tu cherches une vanille gourmande et sucrée façon dessert — celle-ci est plus sèche, plus épicée.",
         lien: "#",
+        lienEchantillon: "#",
       },
     ],
   },
@@ -61,7 +67,9 @@ const FAMILLES = {
         marque: "Diptyque",
         accroche: "\"Ami du figuier\" en grec — un parfum-souvenir d'un été en Grèce",
         histoire: "Philosykos signifie \"ami du figuier\" en grec. Le parfum est né du souvenir d'un été passé au Mont Pélion, où il fallait traverser un verger sauvage de figuiers pour rejoindre la mer. La fraîcheur verte des feuilles, la sève lactée du fruit et le bois du figuier composent une fragrance qui tient plus du souvenir précis que du simple produit.",
+        pasFait: "Pas pour toi si tu n'aimes pas du tout les notes vertes — le côté feuille de figuier est bien présent, pas juste suggéré.",
         lien: "#",
+        lienEchantillon: "#",
       },
     ],
   },
@@ -124,6 +132,13 @@ const GENRE_OPTIONS = [
   { label: "Dans les codes classiquement féminins", value: "feminin" },
   { label: "Dans les codes classiquement masculins", value: "masculin" },
   { label: "Sans étiquette de genre, juste ce qui me ressemble", value: "unisexe" },
+];
+
+const OCCASION_OPTIONS = [
+  { label: "Au quotidien", value: "quotidien", phrase: "un parfum du quotidien, celui qu'on ne retire plus" },
+  { label: "En soirée", value: "soiree", phrase: "un parfum de soirée, pensé pour marquer les esprits" },
+  { label: "Pour un rendez-vous précis", value: "rdv", phrase: "un parfum pour l'occasion que tu as en tête" },
+  { label: "En cadeau pour quelqu'un", value: "cadeau", phrase: "un parfum à offrir, pas juste à porter" },
 ];
 
 const SCAN_STEPS = [
@@ -350,6 +365,7 @@ export default function App() {
   const [scanIndex, setScanIndex] = useState(0);
   const [openReco, setOpenReco] = useState(null);
   const [genrePref, setGenrePref] = useState(null);
+  const [occasionPref, setOccasionPref] = useState(null);
   const [shareLabel, setShareLabel] = useState("Partager mon résultat");
 
   const totalSteps = QUESTIONS.length;
@@ -365,7 +381,9 @@ export default function App() {
   }
 
   function goBack() {
-    if (step === "genre") {
+    if (step === "occasion") {
+      setStep("genre");
+    } else if (step === "genre") {
       setStep(totalSteps - 1);
     } else if (typeof step === "number" && step > 0) {
       setStep(step - 1);
@@ -374,6 +392,11 @@ export default function App() {
 
   function handleGenre(value) {
     setGenrePref(value);
+    setStep("occasion");
+  }
+
+  function handleOccasion(value) {
+    setOccasionPref(value);
     setStep("scanning");
   }
 
@@ -393,6 +416,7 @@ export default function App() {
   function restart() {
     setAnswers(Array(QUESTIONS.length).fill(null));
     setGenrePref(null);
+    setOccasionPref(null);
     setStep(-1);
   }
 
@@ -516,10 +540,10 @@ export default function App() {
         {step === "genre" && (
           <div>
             <div style={styles.progressTrack}>
-              <div style={{ ...styles.progressFill, width: "100%" }} />
+              <div style={{ ...styles.progressFill, width: "88%" }} />
             </div>
             <div style={styles.stepRow}>
-              <div style={styles.stepLabel}>Dernière question</div>
+              <div style={styles.stepLabel}>Avant-dernière question</div>
               <button style={styles.backBtn} onClick={goBack}>
                 ← précédent
               </button>
@@ -540,6 +564,42 @@ export default function App() {
                   onMouseLeave={(e) =>
                     (e.currentTarget.style.borderColor =
                       genrePref === opt.value ? "#c9932f" : "rgba(245,240,230,0.15)")
+                  }
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {step === "occasion" && (
+          <div>
+            <div style={styles.progressTrack}>
+              <div style={{ ...styles.progressFill, width: "100%" }} />
+            </div>
+            <div style={styles.stepRow}>
+              <div style={styles.stepLabel}>Dernière question</div>
+              <button style={styles.backBtn} onClick={goBack}>
+                ← précédent
+              </button>
+            </div>
+            <h2 style={styles.h2} className="aunez-h2">Tu cherches ce parfum surtout pour…</h2>
+            <div style={styles.optionsGrid}>
+              {OCCASION_OPTIONS.map((opt, i) => (
+                <button
+                  key={i}
+                  style={{
+                    ...styles.optionBtn,
+                    borderColor: occasionPref === opt.value ? "#c9932f" : "rgba(245,240,230,0.15)",
+                    background:
+                      occasionPref === opt.value ? "rgba(201,147,47,0.08)" : "rgba(245,240,230,0.04)",
+                  }}
+                  onClick={() => handleOccasion(opt.value)}
+                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#c9932f")}
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.borderColor =
+                      occasionPref === opt.value ? "#c9932f" : "rgba(245,240,230,0.15)")
                   }
                 >
                   {opt.label}
@@ -590,7 +650,11 @@ export default function App() {
             <RadarChart scores={scores} maxScore={maxScore} />
 
             <div style={styles.recosSection}>
-              <div style={styles.recosLabel}>Sélectionnés pour ton profil</div>
+              <div style={styles.recosLabel}>
+                {occasionPref
+                  ? `Sélectionnés pour ${OCCASION_OPTIONS.find((o) => o.value === occasionPref)?.phrase}`
+                  : "Sélectionnés pour ton profil"}
+              </div>
               {FAMILLES[top].recos.map((p, i) => {
                 const isOpen = openReco === i;
                 return (
@@ -612,9 +676,26 @@ export default function App() {
                     {isOpen && (
                       <div style={styles.recoBody}>
                         <p style={styles.recoHistoire}>{p.histoire}</p>
-                        <a href={p.lien} target="_blank" rel="noopener noreferrer" style={styles.recoBtn}>
-                          Découvrir ce parfum
-                        </a>
+                        {p.pasFait && (
+                          <div style={styles.pasFaitBox}>
+                            <span style={styles.pasFaitLabel}>Honnêtement</span> {p.pasFait}
+                          </div>
+                        )}
+                        <div style={styles.recoBtnRow}>
+                          <a href={p.lien} target="_blank" rel="noopener noreferrer" style={styles.recoBtn}>
+                            Découvrir ce parfum
+                          </a>
+                          {p.lienEchantillon && (
+                            <a
+                              href={p.lienEchantillon}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              style={styles.recoBtnGhost}
+                            >
+                              Tester en échantillon d'abord
+                            </a>
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -965,5 +1046,35 @@ const styles = {
     padding: "6px 12px",
     textDecoration: "none",
     flexShrink: 0,
+  },
+  recoBtnGhost: {
+    fontFamily: "'Helvetica Neue', Arial, sans-serif",
+    fontSize: 11.5,
+    letterSpacing: "0.02em",
+    color: "rgba(245,240,230,0.55)",
+    border: "1px dashed rgba(245,240,230,0.25)",
+    borderRadius: 3,
+    padding: "6px 12px",
+    textDecoration: "none",
+    flexShrink: 0,
+  },
+  recoBtnRow: {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  pasFaitBox: {
+    fontFamily: "'Helvetica Neue', Arial, sans-serif",
+    fontSize: 12.5,
+    lineHeight: 1.6,
+    color: "rgba(245,240,230,0.65)",
+    background: "rgba(245,240,230,0.03)",
+    borderLeft: "2px solid rgba(201,147,47,0.4)",
+    padding: "8px 12px",
+    margin: "0 0 14px",
+  },
+  pasFaitLabel: {
+    color: "#c9932f",
+    fontWeight: 600,
   },
 };
