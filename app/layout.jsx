@@ -29,12 +29,16 @@ export default function RootLayout({ children }) {
           *, *::before, *::after {
             box-sizing: border-box;
           }
-          html, body {
+          html {
+            margin: 0;
+            padding: 0;
+          }
+          body {
             margin: 0;
             padding: 0;
             max-width: 100%;
             overflow-x: hidden;
-            overscroll-behavior: none;
+            overscroll-behavior-y: none;
           }
         `}</style>
         {children}
