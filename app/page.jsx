@@ -148,6 +148,12 @@ const QUESTIONS = [
   },
 ];
 
+const GENRE_OPTIONS = [
+  { label: "Dans les codes classiquement féminins", value: "feminin" },
+  { label: "Dans les codes classiquement masculins", value: "masculin" },
+  { label: "Sans étiquette de genre, juste ce qui me ressemble", value: "unisexe" },
+];
+
 const SCAN_STEPS = [
   "Détection des notes dominantes…",
   "Calcul de l'affinité olfactive…",
@@ -371,6 +377,7 @@ export default function App() {
   const [scores, setScores] = useState({ floral: 0, boise: 0, oriental: 0, frais: 0 });
   const [scanIndex, setScanIndex] = useState(0);
   const [openReco, setOpenReco] = useState(null);
+  const [genrePref, setGenrePref] = useState(null);
 
   const totalSteps = QUESTIONS.length;
 
@@ -383,7 +390,12 @@ export default function App() {
       return next;
     });
     const isLast = step === totalSteps - 1;
-    setStep(isLast ? "scanning" : step + 1);
+    setStep(isLast ? "genre" : step + 1);
+  }
+
+  function handleGenre(value) {
+    setGenrePref(value);
+    setStep("scanning");
   }
 
   useEffect(() => {
@@ -401,6 +413,7 @@ export default function App() {
 
   function restart() {
     setScores({ floral: 0, boise: 0, oriental: 0, frais: 0 });
+    setGenrePref(null);
     setStep(-1);
   }
 
@@ -468,6 +481,29 @@ export default function App() {
           </div>
         )}
 
+        {step === "genre" && (
+          <div>
+            <div style={styles.progressTrack}>
+              <div style={{ ...styles.progressFill, width: "100%" }} />
+            </div>
+            <div style={styles.stepLabel}>Dernière question</div>
+            <h2 style={styles.h2}>Le parfum que tu cherches, tu le veux plutôt…</h2>
+            <div style={styles.optionsGrid}>
+              {GENRE_OPTIONS.map((opt, i) => (
+                <button
+                  key={i}
+                  style={styles.optionBtn}
+                  onClick={() => handleGenre(opt.value)}
+                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#c9932f")}
+                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(245,240,230,0.15)")}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {step === "scanning" && (
           <div style={{ ...styles.center, padding: "20px 0" }}>
             <div style={styles.scanRing} />
@@ -499,6 +535,11 @@ export default function App() {
               <div style={styles.bigPct}>{topPct}%</div>
               <h1 style={{ ...styles.h1, marginTop: 0 }}>{FAMILLES[top].label}</h1>
               <p style={styles.lead}>{FAMILLES[top].desc}</p>
+              {genrePref && (
+                <div style={styles.genreTag}>
+                  {GENRE_OPTIONS.find((g) => g.value === genrePref)?.label}
+                </div>
+              )}
             </div>
 
             <RadarChart scores={scores} maxScore={maxScore} />
@@ -631,6 +672,18 @@ const styles = {
     letterSpacing: "-0.02em",
     color: "#c9932f",
     margin: "6px 0 2px",
+  },
+  genreTag: {
+    display: "inline-block",
+    fontFamily: "'Helvetica Neue', Arial, sans-serif",
+    fontSize: 11,
+    letterSpacing: "0.04em",
+    color: "rgba(245,240,230,0.55)",
+    background: "rgba(245,240,230,0.06)",
+    border: "1px solid rgba(245,240,230,0.15)",
+    borderRadius: 20,
+    padding: "5px 14px",
+    marginBottom: 24,
   },
   primaryBtn: {
     fontFamily: "'Helvetica Neue', Arial, sans-serif",
