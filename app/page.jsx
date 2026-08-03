@@ -1,5 +1,3 @@
-"use client";
-
 import { useState, useEffect, useRef } from "react";
 
 // --- Données du quiz -------------------------------------------------
@@ -11,8 +9,20 @@ const FAMILLES = {
     color: "#e07bb0",
     angle: 0,
     recos: [
-      { nom: "Nom du parfum 1", marque: "Marque", note: "Pourquoi il correspond à ce profil (à rédiger)", lien: "#" },
-      { nom: "Nom du parfum 2", marque: "Marque", note: "Pourquoi il correspond à ce profil (à rédiger)", lien: "#" },
+      {
+        nom: "Nom du parfum 1",
+        marque: "Marque",
+        accroche: "Une accroche courte et vendeuse (à rédiger)",
+        histoire: "L'histoire du parfum : sa création, son inspiration, ce qui le rend unique. 2-4 phrases qui racontent une vraie histoire plutôt qu'une simple fiche produit.",
+        lien: "#",
+      },
+      {
+        nom: "Nom du parfum 2",
+        marque: "Marque",
+        accroche: "Une accroche courte et vendeuse (à rédiger)",
+        histoire: "L'histoire du parfum : sa création, son inspiration, ce qui le rend unique.",
+        lien: "#",
+      },
     ],
   },
   boise: {
@@ -21,8 +31,20 @@ const FAMILLES = {
     color: "#c98a4b",
     angle: 90,
     recos: [
-      { nom: "Nom du parfum 1", marque: "Marque", note: "Pourquoi il correspond à ce profil (à rédiger)", lien: "#" },
-      { nom: "Nom du parfum 2", marque: "Marque", note: "Pourquoi il correspond à ce profil (à rédiger)", lien: "#" },
+      {
+        nom: "Nom du parfum 1",
+        marque: "Marque",
+        accroche: "Une accroche courte et vendeuse (à rédiger)",
+        histoire: "L'histoire du parfum : sa création, son inspiration, ce qui le rend unique.",
+        lien: "#",
+      },
+      {
+        nom: "Nom du parfum 2",
+        marque: "Marque",
+        accroche: "Une accroche courte et vendeuse (à rédiger)",
+        histoire: "L'histoire du parfum : sa création, son inspiration, ce qui le rend unique.",
+        lien: "#",
+      },
     ],
   },
   oriental: {
@@ -31,8 +53,20 @@ const FAMILLES = {
     color: "#8b5fd9",
     angle: 180,
     recos: [
-      { nom: "Nom du parfum 1", marque: "Marque", note: "Pourquoi il correspond à ce profil (à rédiger)", lien: "#" },
-      { nom: "Nom du parfum 2", marque: "Marque", note: "Pourquoi il correspond à ce profil (à rédiger)", lien: "#" },
+      {
+        nom: "Nom du parfum 1",
+        marque: "Marque",
+        accroche: "Une accroche courte et vendeuse (à rédiger)",
+        histoire: "L'histoire du parfum : sa création, son inspiration, ce qui le rend unique.",
+        lien: "#",
+      },
+      {
+        nom: "Nom du parfum 2",
+        marque: "Marque",
+        accroche: "Une accroche courte et vendeuse (à rédiger)",
+        histoire: "L'histoire du parfum : sa création, son inspiration, ce qui le rend unique.",
+        lien: "#",
+      },
     ],
   },
   frais: {
@@ -41,8 +75,20 @@ const FAMILLES = {
     color: "#3fc9c2",
     angle: 270,
     recos: [
-      { nom: "Nom du parfum 1", marque: "Marque", note: "Pourquoi il correspond à ce profil (à rédiger)", lien: "#" },
-      { nom: "Nom du parfum 2", marque: "Marque", note: "Pourquoi il correspond à ce profil (à rédiger)", lien: "#" },
+      {
+        nom: "Nom du parfum 1",
+        marque: "Marque",
+        accroche: "Une accroche courte et vendeuse (à rédiger)",
+        histoire: "L'histoire du parfum : sa création, son inspiration, ce qui le rend unique.",
+        lien: "#",
+      },
+      {
+        nom: "Nom du parfum 2",
+        marque: "Marque",
+        accroche: "Une accroche courte et vendeuse (à rédiger)",
+        histoire: "L'histoire du parfum : sa création, son inspiration, ce qui le rend unique.",
+        lien: "#",
+      },
     ],
   },
 };
@@ -322,6 +368,7 @@ export default function App() {
   const [step, setStep] = useState(-1); // -1 intro, 0..N-1 questions, "scanning", "result"
   const [scores, setScores] = useState({ floral: 0, boise: 0, oriental: 0, frais: 0 });
   const [scanIndex, setScanIndex] = useState(0);
+  const [openReco, setOpenReco] = useState(null);
 
   const totalSteps = QUESTIONS.length;
 
@@ -456,19 +503,35 @@ export default function App() {
 
             <div style={styles.recosSection}>
               <div style={styles.recosLabel}>Sélectionnés pour ton profil</div>
-              {FAMILLES[top].recos.map((p, i) => (
-                <div key={i} style={styles.recoCard}>
-                  <div style={{ ...styles.recoDot, background: FAMILLES[top].color }} />
-                  <div style={{ flex: 1 }}>
-                    <div style={styles.recoName}>{p.nom}</div>
-                    <div style={styles.recoBrand}>{p.marque}</div>
-                    <div style={styles.recoNote}>{p.note}</div>
+              {FAMILLES[top].recos.map((p, i) => {
+                const isOpen = openReco === i;
+                return (
+                  <div key={i} style={styles.recoCard}>
+                    <button
+                      style={styles.recoHeader}
+                      onClick={() => setOpenReco(isOpen ? null : i)}
+                    >
+                      <div style={{ ...styles.recoDot, background: FAMILLES[top].color }} />
+                      <div style={{ flex: 1, textAlign: "left" }}>
+                        <div style={styles.recoName}>{p.nom}</div>
+                        <div style={styles.recoBrand}>{p.marque}</div>
+                        <div style={styles.recoAccroche}>{p.accroche}</div>
+                      </div>
+                      <div style={{ ...styles.recoChevron, transform: isOpen ? "rotate(180deg)" : "none" }}>
+                        ⌄
+                      </div>
+                    </button>
+                    {isOpen && (
+                      <div style={styles.recoBody}>
+                        <p style={styles.recoHistoire}>{p.histoire}</p>
+                        <a href={p.lien} target="_blank" rel="noopener noreferrer" style={styles.recoBtn}>
+                          Découvrir ce parfum
+                        </a>
+                      </div>
+                    )}
                   </div>
-                  <a href={p.lien} target="_blank" rel="noopener noreferrer" style={styles.recoBtn}>
-                    Voir
-                  </a>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             <div style={{ ...styles.center }}>
@@ -645,14 +708,22 @@ const styles = {
     marginBottom: 12,
   },
   recoCard: {
-    display: "flex",
-    alignItems: "center",
-    gap: 12,
     background: "rgba(245,240,230,0.04)",
     border: "1px solid rgba(245,240,230,0.12)",
     borderRadius: 4,
-    padding: "12px 14px",
     marginBottom: 10,
+    overflow: "hidden",
+  },
+  recoHeader: {
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
+    gap: 12,
+    background: "transparent",
+    border: "none",
+    padding: "14px 16px",
+    cursor: "pointer",
+    color: "#f5f0e6",
   },
   recoDot: { width: 8, height: 8, borderRadius: "50%", flexShrink: 0 },
   recoName: {
@@ -664,13 +735,31 @@ const styles = {
     fontFamily: "'Helvetica Neue', Arial, sans-serif",
     fontSize: 11.5,
     color: "rgba(245,240,230,0.5)",
-    marginBottom: 3,
+    margin: "2px 0 4px",
   },
-  recoNote: {
+  recoAccroche: {
     fontFamily: "'Helvetica Neue', Arial, sans-serif",
-    fontSize: 12,
-    color: "rgba(245,240,230,0.65)",
-    lineHeight: 1.4,
+    fontSize: 12.5,
+    fontStyle: "italic",
+    color: "rgba(245,240,230,0.7)",
+  },
+  recoChevron: {
+    fontSize: 16,
+    color: "rgba(245,240,230,0.4)",
+    transition: "transform 0.25s ease",
+    flexShrink: 0,
+  },
+  recoBody: {
+    padding: "0 16px 18px",
+    borderTop: "1px solid rgba(245,240,230,0.08)",
+    animation: "fadeUp 0.3s ease",
+  },
+  recoHistoire: {
+    fontFamily: "'Helvetica Neue', Arial, sans-serif",
+    fontSize: 13,
+    lineHeight: 1.65,
+    color: "rgba(245,240,230,0.75)",
+    margin: "14px 0 16px",
   },
   recoBtn: {
     fontFamily: "'Helvetica Neue', Arial, sans-serif",
