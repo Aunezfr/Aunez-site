@@ -1,298 +1,597 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
+import { useState, useEffect, useRef } from "react";
 
-const PAGES = [
-  {
-    era: "Antiquité",
-    period: "env. 3000 av. J.-C.",
-    title: "Les origines",
-    text: "Le parfum naît en Mésopotamie et en Égypte ancienne, où l'on brûle des résines et des bois odorants pour les rituels religieux — le mot \"parfum\" vient du latin per fumum, \"par la fumée\". Les Égyptiens l'associent aussi à la beauté et à l'embaumement.",
-    icon: "urn",
-    material: "papyrus",
-  },
-  {
-    era: "Monde arabe",
-    period: "env. l'an 1000",
-    title: "La révolution technique",
-    text: "Le médecin et savant perse Avicenne perfectionne la distillation à la vapeur, permettant d'extraire l'essence pure des fleurs — notamment la rose. Une avancée décisive qui rendra possible la parfumerie moderne.",
-    icon: "alembic",
-    material: "parchemin",
-  },
-  {
-    era: "Grasse, France",
-    period: "XVIe – XVIIIe siècle",
-    title: "La naissance d'une capitale",
-    text: "Grâce à son climat et ses champs de fleurs, la ville de Grasse devient le cœur mondial de la parfumerie. Les \"nez\" y perfectionnent leur art, d'abord pour parfumer les gants des aristocrates.",
-    icon: "flower",
-    material: "papier-ancien",
-  },
-  {
-    era: "XIXe siècle",
-    period: "1889",
-    title: "L'ère de la chimie",
-    text: "L'invention des molécules de synthèse libère les parfumeurs des seules matières naturelles. Guerlain lance Jicky, considéré comme le premier grand parfum moderne, mêlant naturel et synthétique.",
-    icon: "flask",
-    material: "papier-technique",
-  },
-  {
-    era: "XXe siècle",
-    period: "1921",
-    title: "L'âge d'or des maisons",
-    text: "Chanel N°5 marque l'entrée du parfum dans la culture de masse et le luxe. Les grandes maisons de couture — Dior, Chanel, Yves Saint Laurent — dominent le marché pendant des décennies.",
-    icon: "bottle",
-    material: "papier-glace",
-  },
-  {
-    era: "Depuis les années 1990",
-    period: "aujourd'hui",
-    title: "Le retour du sur-mesure",
-    text: "Fatigués de l'uniformisation, des créateurs indépendants fondent la parfumerie de niche : moins de compromis marketing, plus de liberté artistique. C'est le mouvement dans lequel s'inscrit une partie de l'esprit d'Aunez.",
-    icon: "spark",
-    material: "verre",
-  },
-];
+// --- Données du quiz -------------------------------------------------
 
-const MATERIALS = {
-  papyrus: {
-    background: "linear-gradient(160deg, #cbb073 0%, #b89857 50%, #cbb073 100%)",
-    border: "1px solid rgba(60,40,10,0.35)",
-    color: "#3a2c14",
-    accent: "#5a3d18",
-    fontFamily: "'Iowan Old Style', 'Georgia', serif",
-    texture: "repeating-linear-gradient(90deg, rgba(60,40,10,0.05) 0px, transparent 2px, transparent 6px)",
+const FAMILLES = {
+  floral: {
+    label: "Floral",
+    desc: "Rose, jasmin, fleur d'oranger — élégant et lumineux",
+    color: "#e07bb0",
+    angle: 0,
+    recos: [
+      {
+        nom: "Nom du parfum 1",
+        marque: "Marque",
+        accroche: "Une accroche courte et vendeuse (à rédiger)",
+        histoire: "L'histoire du parfum : sa création, son inspiration, ce qui le rend unique. 2-4 phrases qui racontent une vraie histoire plutôt qu'une simple fiche produit.",
+        lien: "#",
+      },
+      {
+        nom: "Nom du parfum 2",
+        marque: "Marque",
+        accroche: "Une accroche courte et vendeuse (à rédiger)",
+        histoire: "L'histoire du parfum : sa création, son inspiration, ce qui le rend unique.",
+        lien: "#",
+      },
+    ],
   },
-  parchemin: {
-    background: "linear-gradient(160deg, #ddc99a 0%, #cbb27e 55%, #ddc99a 100%)",
-    border: "1px solid rgba(70,45,10,0.35)",
-    color: "#3f2c14",
-    accent: "#8a5a1f",
-    fontFamily: "'Iowan Old Style', 'Georgia', serif",
-    texture: "repeating-linear-gradient(0deg, rgba(70,45,10,0.04) 0px, transparent 2px, transparent 7px)",
+  boise: {
+    label: "Boisé",
+    desc: "Bois de santal, vétiver, cèdre — chaud et enveloppant",
+    color: "#c98a4b",
+    angle: 90,
+    recos: [
+      {
+        nom: "Nom du parfum 1",
+        marque: "Marque",
+        accroche: "Une accroche courte et vendeuse (à rédiger)",
+        histoire: "L'histoire du parfum : sa création, son inspiration, ce qui le rend unique.",
+        lien: "#",
+      },
+      {
+        nom: "Nom du parfum 2",
+        marque: "Marque",
+        accroche: "Une accroche courte et vendeuse (à rédiger)",
+        histoire: "L'histoire du parfum : sa création, son inspiration, ce qui le rend unique.",
+        lien: "#",
+      },
+    ],
   },
-  "papier-ancien": {
-    background: "linear-gradient(160deg, #efe3c8 0%, #e6d5ae 55%, #efe3c8 100%)",
-    border: "1px solid rgba(120,90,40,0.3)",
-    color: "#3a2f1c",
-    accent: "#96702e",
-    fontFamily: "'Iowan Old Style', 'Georgia', serif",
-    texture: "none",
+  oriental: {
+    label: "Oriental",
+    desc: "Vanille, ambre, épices — intense et sensuel",
+    color: "#8b5fd9",
+    angle: 180,
+    recos: [
+      {
+        nom: "Nom du parfum 1",
+        marque: "Marque",
+        accroche: "Une accroche courte et vendeuse (à rédiger)",
+        histoire: "L'histoire du parfum : sa création, son inspiration, ce qui le rend unique.",
+        lien: "#",
+      },
+      {
+        nom: "Nom du parfum 2",
+        marque: "Marque",
+        accroche: "Une accroche courte et vendeuse (à rédiger)",
+        histoire: "L'histoire du parfum : sa création, son inspiration, ce qui le rend unique.",
+        lien: "#",
+      },
+    ],
   },
-  "papier-technique": {
-    background: "linear-gradient(160deg, #f2ede1 0%, #e9e2d0 100%)",
-    border: "1px solid rgba(90,90,70,0.3)",
-    color: "#2c2a22",
-    accent: "#6b6248",
-    fontFamily: "'Helvetica Neue', Arial, sans-serif",
-    texture:
-      "repeating-linear-gradient(0deg, rgba(90,90,70,0.08) 0px, transparent 1px, transparent 22px), repeating-linear-gradient(90deg, rgba(90,90,70,0.08) 0px, transparent 1px, transparent 22px)",
-  },
-  "papier-glace": {
-    background: "linear-gradient(160deg, #f7f5f0 0%, #ece7dc 100%)",
-    border: "1px solid rgba(180,150,80,0.4)",
-    color: "#201d18",
-    accent: "#a8791f",
-    fontFamily: "'Georgia', serif",
-    texture: "none",
-  },
-  verre: {
-    background: "rgba(20,15,26,0.6)",
-    border: "1px solid rgba(245,240,230,0.14)",
-    color: "#f5f0e6",
-    accent: "#c9932f",
-    fontFamily: "'Georgia', serif",
-    texture: "none",
-    glass: true,
+  frais: {
+    label: "Frais",
+    desc: "Agrumes, notes marines, herbes vertes — léger et vif",
+    color: "#3fc9c2",
+    angle: 270,
+    recos: [
+      {
+        nom: "Nom du parfum 1",
+        marque: "Marque",
+        accroche: "Une accroche courte et vendeuse (à rédiger)",
+        histoire: "L'histoire du parfum : sa création, son inspiration, ce qui le rend unique.",
+        lien: "#",
+      },
+      {
+        nom: "Nom du parfum 2",
+        marque: "Marque",
+        accroche: "Une accroche courte et vendeuse (à rédiger)",
+        histoire: "L'histoire du parfum : sa création, son inspiration, ce qui le rend unique.",
+        lien: "#",
+      },
+    ],
   },
 };
 
-function Illustration({ name, color }) {
-  const common = { fill: "none", stroke: color, strokeWidth: 1.4, strokeLinecap: "round", strokeLinejoin: "round" };
+const QUESTIONS = [
+  {
+    id: "q1",
+    title: "Un dimanche idéal ressemble plutôt à…",
+    options: [
+      { label: "Un brunch dans un jardin fleuri", points: { floral: 2 } },
+      { label: "Une balade en forêt", points: { boise: 2 } },
+      { label: "Un after-midi cocooning, plaid et bougie", points: { oriental: 2 } },
+      { label: "Une baignade en mer tôt le matin", points: { frais: 2 } },
+    ],
+  },
+  {
+    id: "q2",
+    title: "Pour l'occasion, tu portes le parfum surtout…",
+    options: [
+      { label: "Au quotidien, au bureau", points: { frais: 1, floral: 1 } },
+      { label: "En soirée, pour marquer les esprits", points: { oriental: 2 } },
+      { label: "Toute l'année, sans distinction", points: { boise: 1 } },
+      { label: "Pour les grandes occasions", points: { oriental: 1, floral: 1 } },
+    ],
+  },
+  {
+    id: "q3",
+    title: "L'intensité que tu recherches…",
+    options: [
+      { label: "Discrète, on doit s'approcher pour la sentir", points: { frais: 2 } },
+      { label: "Présente sans envahir", points: { floral: 1, boise: 1 } },
+      { label: "Marquante, un vrai sillage", points: { oriental: 2 } },
+      { label: "Peu importe, tant qu'elle est unique", points: { boise: 2 } },
+    ],
+  },
+  {
+    id: "q4",
+    title: "Le mot qui te correspond le plus…",
+    options: [
+      { label: "Romantique", points: { floral: 2 } },
+      { label: "Mystérieux", points: { boise: 2, oriental: 1 } },
+      { label: "Audacieux", points: { oriental: 2 } },
+      { label: "Naturel", points: { frais: 2 } },
+    ],
+  },
+  {
+    id: "q5",
+    title: "Il y a une ambiance olfactive que tu évites clairement…",
+    options: [
+      { label: "Les parfums trop fleuris, ça me dérange vite", points: { floral: -2 } },
+      { label: "Les notes boisées/terreuses, pas trop mon truc", points: { boise: -2 } },
+      { label: "Les parfums lourds, épicés ou sucrés", points: { oriental: -2 } },
+      { label: "Non, je suis ouvert·e à tout", points: {} },
+    ],
+  },
+];
+
+const GENRE_OPTIONS = [
+  { label: "Dans les codes classiquement féminins", value: "feminin" },
+  { label: "Dans les codes classiquement masculins", value: "masculin" },
+  { label: "Sans étiquette de genre, juste ce qui me ressemble", value: "unisexe" },
+];
+
+const SCAN_STEPS = [
+  "Détection des notes dominantes…",
+  "Calcul de l'affinité olfactive…",
+  "Génération de ta signature…",
+];
+
+function useStarField(count = 140) {
+  return useState(() =>
+    Array.from({ length: count }, () => ({
+      top: Math.random() * 100,
+      left: Math.random() * 100,
+      size: Math.random() * 1.8 + 0.6,
+      duration: Math.random() * 3 + 2.5,
+      delay: Math.random() * 4,
+    }))
+  )[0];
+}
+
+function StarField({ revealCount }) {
+  const stars = useStarField(140);
   return (
-    <svg viewBox="0 0 100 100" width="68" height="68">
-      {name === "urn" && (
-        <>
-          <path {...common} d="M38 30 Q50 10 62 30" />
-          <path {...common} d="M35 30 L65 30 L60 78 Q50 84 40 78 Z" />
-          <path {...common} d="M42 30 L58 30" />
-          <path {...common} d="M46 46 Q50 40 54 46" opacity="0.6" />
-          <path {...common} d="M45 38 Q50 30 55 38" opacity="0.4" />
-        </>
-      )}
-      {name === "alembic" && (
-        <>
-          <circle {...common} cx="42" cy="55" r="18" />
-          <path {...common} d="M50 40 L68 22" />
-          <path {...common} d="M68 22 L78 22 L78 30" />
-          <path {...common} d="M42 37 L42 30" />
-          <circle cx="42" cy="55" r="3" fill={color} stroke="none" />
-        </>
-      )}
-      {name === "flower" && (
-        <>
-          <circle {...common} cx="50" cy="42" r="7" />
-          <path {...common} d="M50 35 Q40 25 43 15 Q50 20 50 35" />
-          <path {...common} d="M50 35 Q60 25 57 15 Q50 20 50 35" />
-          <path {...common} d="M43 45 Q28 45 25 55 Q35 58 45 49" />
-          <path {...common} d="M57 45 Q72 45 75 55 Q65 58 55 49" />
-          <path {...common} d="M50 49 L50 82" />
-          <path {...common} d="M50 65 Q40 65 38 72" />
-        </>
-      )}
-      {name === "flask" && (
-        <>
-          <path {...common} d="M44 20 L44 42 L28 76 Q30 80 50 80 Q70 80 72 76 L56 42 L56 20" />
-          <path {...common} d="M40 20 L60 20" />
-          <circle cx="44" cy="60" r="2.2" fill={color} stroke="none" />
-          <circle cx="55" cy="66" r="2.2" fill={color} stroke="none" />
-          <circle cx="49" cy="72" r="2.2" fill={color} stroke="none" />
-          <path {...common} d="M35 55 L65 55" opacity="0.5" />
-        </>
-      )}
-      {name === "bottle" && (
-        <>
-          <path {...common} d="M42 30 L58 30 L58 40 L64 46 L64 78 Q64 82 60 82 L40 82 Q36 82 36 78 L36 46 L42 40 Z" />
-          <path {...common} d="M46 22 L54 22 L54 30 L46 30 Z" />
-          <path {...common} d="M36 55 L64 55" opacity="0.5" />
-        </>
-      )}
-      {name === "spark" && (
-        <>
-          <path {...common} d="M50 15 L56 42 L82 48 L56 54 L50 82 L44 54 L18 48 L44 42 Z" />
-          <circle cx="50" cy="48" r="4" fill={color} stroke="none" />
-        </>
-      )}
+    <div style={styles.starLayer}>
+      {stars.map((s, i) => {
+        const visible = i < revealCount;
+        return (
+          <div
+            key={i}
+            style={{
+              position: "absolute",
+              top: `${s.top}%`,
+              left: `${s.left}%`,
+              width: s.size,
+              height: s.size,
+              borderRadius: "50%",
+              background: "#f5f0e6",
+              opacity: visible ? 1 : 0,
+              transition: "opacity 1.2s ease",
+              animation: visible ? `twinkle ${s.duration}s ease-in-out ${s.delay}s infinite` : "none",
+              boxShadow: visible ? "0 0 4px rgba(245,240,230,0.6)" : "none",
+            }}
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+function AuraBackground({ percentages }) {
+  const fams = Object.keys(FAMILLES);
+  const configs = {
+    floral: { top: "-14%", left: "-10%", anim: "floatA", duration: 16 },
+    boise: { top: "-10%", left: "56%", anim: "floatB", duration: 20 },
+    oriental: { top: "52%", left: "60%", anim: "floatC", duration: 18 },
+    frais: { top: "56%", left: "-12%", anim: "floatD", duration: 22 },
+  };
+  return (
+    <div style={styles.aura}>
+      {fams.map((f) => {
+        const cfg = configs[f];
+        const pct = percentages[f] || 0;
+        return (
+          <div
+            key={f}
+            style={{
+              position: "absolute",
+              top: cfg.top,
+              left: cfg.left,
+              width: 560,
+              height: 560,
+              borderRadius: "50%",
+              background: `radial-gradient(circle, ${FAMILLES[f].color} 0%, transparent 68%)`,
+              filter: "blur(50px) saturate(1.4)",
+              mixBlendMode: "screen",
+              opacity: 0.3 + (pct / 100) * 0.7,
+              transition: "opacity 1s ease",
+              animation: `${cfg.anim} ${cfg.duration}s ease-in-out infinite`,
+              pointerEvents: "none",
+            }}
+          />
+        );
+      })}
+      <div style={styles.grain} />
+    </div>
+  );
+}
+
+// --- Petits composants génératifs -------------------------------------
+
+function ScentOrb({ percentages, size = 150 }) {
+  const stops = [];
+  let acc = 0;
+  Object.entries(percentages).forEach(([fam, pct]) => {
+    const start = acc;
+    acc += pct;
+    stops.push(`${FAMILLES[fam].color} ${start}% ${acc}%`);
+  });
+  return (
+    <div
+      style={{
+        width: size,
+        height: size,
+        borderRadius: "50%",
+        margin: "0 auto",
+        background: `conic-gradient(${stops.join(", ")})`,
+        boxShadow: `0 0 40px -6px rgba(201,147,47,0.5), 0 0 0 1px rgba(245,240,230,0.15)`,
+        animation: "spin 14s linear infinite",
+        position: "relative",
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          inset: 10,
+          borderRadius: "50%",
+          background: "#0f0a14",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      />
+    </div>
+  );
+}
+
+function RadarChart({ scores, maxScore, size = 220 }) {
+  const cx = size / 2;
+  const cy = size / 2;
+  const r = size / 2 - 28;
+  const fams = Object.keys(FAMILLES);
+
+  function pointFor(fam, value) {
+    const angleRad = ((FAMILLES[fam].angle - 90) * Math.PI) / 180;
+    const dist = (value / maxScore) * r;
+    return [cx + dist * Math.cos(angleRad), cy + dist * Math.sin(angleRad)];
+  }
+
+  const dataPoints = fams.map((f) => pointFor(f, scores[f]));
+  const dataPath = dataPoints.map((p) => p.join(",")).join(" ");
+
+  const rings = [0.33, 0.66, 1];
+
+  return (
+    <svg width={size} height={size} style={{ display: "block", margin: "0 auto" }}>
+      {rings.map((ringPct, i) => {
+        const pts = fams
+          .map((f) => {
+            const angleRad = ((FAMILLES[f].angle - 90) * Math.PI) / 180;
+            const dist = ringPct * r;
+            return `${cx + dist * Math.cos(angleRad)},${cy + dist * Math.sin(angleRad)}`;
+          })
+          .join(" ");
+        return (
+          <polygon
+            key={i}
+            points={pts}
+            fill="none"
+            stroke="rgba(245,240,230,0.12)"
+            strokeWidth="1"
+          />
+        );
+      })}
+      {fams.map((f) => {
+        const angleRad = ((FAMILLES[f].angle - 90) * Math.PI) / 180;
+        const x2 = cx + r * Math.cos(angleRad);
+        const y2 = cy + r * Math.sin(angleRad);
+        const lx = cx + (r + 18) * Math.cos(angleRad);
+        const ly = cy + (r + 18) * Math.sin(angleRad);
+        return (
+          <g key={f}>
+            <line x1={cx} y1={cy} x2={x2} y2={y2} stroke="rgba(245,240,230,0.12)" strokeWidth="1" />
+            <text
+              x={lx}
+              y={ly}
+              fill="rgba(245,240,230,0.55)"
+              fontSize="10"
+              fontFamily="'Helvetica Neue', Arial, sans-serif"
+              textAnchor="middle"
+              dominantBaseline="middle"
+            >
+              {FAMILLES[f].label}
+            </text>
+          </g>
+        );
+      })}
+      <polygon
+        points={dataPath}
+        fill="rgba(201,147,47,0.22)"
+        stroke="#c9932f"
+        strokeWidth="1.5"
+        style={{ transition: "all 0.6s ease" }}
+      />
+      {dataPoints.map((p, i) => (
+        <circle key={i} cx={p[0]} cy={p[1]} r="3" fill={FAMILLES[fams[i]].color} />
+      ))}
     </svg>
   );
 }
 
-function PageContent({ p, m, onPrev, onNext, canPrev, canNext }) {
-  return (
-    <>
-      {m.texture !== "none" && <div style={{ ...styles.texture, backgroundImage: m.texture }} />}
-      <div style={styles.iconWrap}>
-        <Illustration name={p.icon} color={m.accent} />
-        <button
-          aria-label="Page précédente"
-          onClick={onPrev}
-          disabled={!canPrev}
-          style={{ ...styles.iconZone, left: 0, cursor: canPrev ? "pointer" : "default" }}
-        />
-        <button
-          aria-label="Page suivante"
-          onClick={onNext}
-          disabled={!canNext}
-          style={{ ...styles.iconZone, right: 0, cursor: canNext ? "pointer" : "default" }}
-        />
-      </div>
-      <div style={{ ...styles.period, color: m.accent }}>{p.period}</div>
-      <h2 style={{ ...styles.era, color: m.accent }}>{p.era}</h2>
-      <div style={{ ...styles.title, color: m.color }}>{p.title}</div>
-      <p style={{ ...styles.text, color: m.color }}>{p.text}</p>
-    </>
-  );
+function useCountUp(target, durationMs = 900, start = false) {
+  const [value, setValue] = useState(0);
+  const raf = useRef(null);
+  useEffect(() => {
+    if (!start) return;
+    const t0 = performance.now();
+    function tick(now) {
+      const p = Math.min(1, (now - t0) / durationMs);
+      const eased = 1 - Math.pow(1 - p, 3);
+      setValue(Math.round(target * eased));
+      if (p < 1) raf.current = requestAnimationFrame(tick);
+    }
+    raf.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf.current);
+  }, [start, target, durationMs]);
+  return value;
 }
 
-export default function HistoireDuParfum() {
-  const [index, setIndex] = useState(0);
-  const [flipping, setFlipping] = useState(false);
-  const [dir, setDir] = useState(1);
-  const [nextIndex, setNextIndex] = useState(null);
+// --- App principale ----------------------------------------------------
 
-  function go(delta) {
-    const target = index + delta;
-    if (target < 0 || target >= PAGES.length || flipping) return;
-    setDir(delta);
-    setNextIndex(target);
-    setFlipping(true);
-    setTimeout(() => {
-      setIndex(target);
-      setFlipping(false);
-      setNextIndex(null);
-    }, 420);
+export default function App() {
+  const [step, setStep] = useState(-1); // -1 intro, 0..N-1 questions, "scanning", "result"
+  const [scores, setScores] = useState({ floral: 0, boise: 0, oriental: 0, frais: 0 });
+  const [scanIndex, setScanIndex] = useState(0);
+  const [openReco, setOpenReco] = useState(null);
+  const [genrePref, setGenrePref] = useState(null);
+
+  const totalSteps = QUESTIONS.length;
+
+  function handleAnswer(points) {
+    setScores((prev) => {
+      const next = { ...prev };
+      Object.entries(points).forEach(([fam, val]) => {
+        next[fam] = Math.max(0, next[fam] + val);
+      });
+      return next;
+    });
+    const isLast = step === totalSteps - 1;
+    setStep(isLast ? "genre" : step + 1);
   }
 
-  const current = PAGES[index];
-  const currentM = MATERIALS[current.material];
-  const below = nextIndex !== null ? PAGES[nextIndex] : null;
-  const belowM = below ? MATERIALS[below.material] : null;
+  function handleGenre(value) {
+    setGenrePref(value);
+    setStep("scanning");
+  }
+
+  useEffect(() => {
+    if (step !== "scanning") return;
+    setScanIndex(0);
+    const t1 = setTimeout(() => setScanIndex(1), 550);
+    const t2 = setTimeout(() => setScanIndex(2), 1100);
+    const t3 = setTimeout(() => setStep("result"), 1750);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+    };
+  }, [step]);
+
+  function restart() {
+    setScores({ floral: 0, boise: 0, oriental: 0, frais: 0 });
+    setGenrePref(null);
+    setStep(-1);
+  }
+
+  const total = Object.values(scores).reduce((a, b) => a + b, 0) || 1;
+  const percentages = Object.fromEntries(
+    Object.entries(scores).map(([f, v]) => [f, Math.round((v / total) * 100)])
+  );
+  const maxScore = Math.max(...Object.values(scores), 1);
+  const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+  const top = sorted[0][0];
+  const topPct = useCountUp(percentages[top], 1100, step === "result");
+
+  const answeredCount = typeof step === "number" ? step : totalSteps;
+  const starsToReveal = 20 + answeredCount * 22;
 
   return (
     <div style={styles.page}>
-      <div style={styles.vignette} />
-      <div style={styles.wrap}>
-        <Link href="/" style={styles.back}>
-          ← Retour au quiz
-        </Link>
-
-        <div style={styles.eyebrow}>Histoire du parfum</div>
-
-        <div style={styles.stage}>
-          <div style={styles.bookShell}>
-            {below && (
-              <div
-                style={{
-                  ...styles.book,
-                  ...styles.bookLayer,
-                  background: belowM.background,
-                  border: belowM.border,
-                  fontFamily: belowM.fontFamily,
-                  backdropFilter: belowM.glass ? "blur(22px)" : "none",
-                  WebkitBackdropFilter: belowM.glass ? "blur(22px)" : "none",
-                }}
-              >
-                <PageContent p={below} m={belowM} />
-              </div>
-            )}
-            <div
-              style={{
-                ...styles.book,
-                ...styles.bookLayer,
-                background: currentM.background,
-                border: currentM.border,
-                fontFamily: currentM.fontFamily,
-                backdropFilter: currentM.glass ? "blur(22px)" : "none",
-                WebkitBackdropFilter: currentM.glass ? "blur(22px)" : "none",
-                boxShadow: flipping
-                  ? "4px 0 24px rgba(0,0,0,0.45)"
-                  : currentM.glass
-                  ? "0 20px 70px rgba(0,0,0,0.55)"
-                  : "0 18px 40px rgba(0,0,0,0.5)",
-                transformOrigin: dir > 0 ? "left center" : "right center",
-                transform: flipping ? `rotateY(${dir > 0 ? -175 : 175}deg)` : "rotateY(0deg)",
-                transition: flipping ? "transform 0.42s cubic-bezier(0.45, 0, 0.55, 1)" : "none",
-                backfaceVisibility: "hidden",
-                WebkitBackfaceVisibility: "hidden",
-                zIndex: 2,
-              }}
-            >
-              <PageContent p={current} m={currentM} onPrev={() => go(-1)} onNext={() => go(1)} canPrev={index > 0} canNext={index < PAGES.length - 1} />
-            </div>
-          </div>
-
-          <div style={styles.nav}>
-            <button
-              style={{ ...styles.navBtn, opacity: index === 0 ? 0.3 : 1 }}
-              onClick={() => go(-1)}
-              disabled={index === 0}
-            >
-              ← page précédente
+      <style>{`
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes pulse { 0%,100% { opacity: 0.35; } 50% { opacity: 1; } }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes floatA { 0%,100% { transform: translate(0,0) scale(1); } 33% { transform: translate(60px,40px) scale(1.15); } 66% { transform: translate(-20px,60px) scale(0.95); } }
+        @keyframes floatB { 0%,100% { transform: translate(0,0) scale(1); } 33% { transform: translate(-50px,50px) scale(1.1); } 66% { transform: translate(-70px,-20px) scale(1.05); } }
+        @keyframes floatC { 0%,100% { transform: translate(0,0) scale(1); } 33% { transform: translate(-60px,-40px) scale(1.2); } 66% { transform: translate(30px,-60px) scale(0.9); } }
+        @keyframes floatD { 0%,100% { transform: translate(0,0) scale(1); } 33% { transform: translate(50px,-50px) scale(1.05); } 66% { transform: translate(70px,20px) scale(1.15); } }
+        @keyframes twinkle { 0%,100% { opacity: 0.25; } 50% { opacity: 1; } }
+      `}</style>
+      <StarField revealCount={starsToReveal} />
+      <AuraBackground percentages={percentages} />
+      <div style={styles.card}>
+        {step === -1 && (
+          <div style={styles.center}>
+            <div style={styles.eyebrow}>Quiz olfactif</div>
+            <h1 style={styles.h1}>Quel est ton profil de parfum ?</h1>
+            <p style={styles.lead}>
+              Quatre questions pour révéler ta signature olfactive, avant de
+              découvrir des parfums de niche taillés pour toi.
+            </p>
+            <button style={styles.primaryBtn} onClick={() => setStep(0)}>
+              Commencer
             </button>
-            <div style={styles.dots}>
-              {PAGES.map((_, i) => (
-                <div key={i} style={{ ...styles.dot, opacity: i === index ? 1 : 0.25 }} />
+          </div>
+        )}
+
+        {typeof step === "number" && step >= 0 && step < totalSteps && (
+          <div>
+            <div style={styles.progressTrack}>
+              <div style={{ ...styles.progressFill, width: `${(step / totalSteps) * 100}%` }} />
+            </div>
+            <div style={styles.stepLabel}>Question {step + 1} / {totalSteps}</div>
+            <h2 style={styles.h2}>{QUESTIONS[step].title}</h2>
+            <div style={styles.optionsGrid}>
+              {QUESTIONS[step].options.map((opt, i) => (
+                <button
+                  key={i}
+                  style={styles.optionBtn}
+                  onClick={() => handleAnswer(opt.points)}
+                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#c9932f")}
+                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(245,240,230,0.15)")}
+                >
+                  {opt.label}
+                </button>
               ))}
             </div>
-            <button
-              style={{ ...styles.navBtn, opacity: index === PAGES.length - 1 ? 0.3 : 1 }}
-              onClick={() => go(1)}
-              disabled={index === PAGES.length - 1}
-            >
-              page suivante →
-            </button>
           </div>
-        </div>
+        )}
+
+        {step === "genre" && (
+          <div>
+            <div style={styles.progressTrack}>
+              <div style={{ ...styles.progressFill, width: "100%" }} />
+            </div>
+            <div style={styles.stepLabel}>Dernière question</div>
+            <h2 style={styles.h2}>Le parfum que tu cherches, tu le veux plutôt…</h2>
+            <div style={styles.optionsGrid}>
+              {GENRE_OPTIONS.map((opt, i) => (
+                <button
+                  key={i}
+                  style={styles.optionBtn}
+                  onClick={() => handleGenre(opt.value)}
+                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#c9932f")}
+                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(245,240,230,0.15)")}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {step === "scanning" && (
+          <div style={{ ...styles.center, padding: "20px 0" }}>
+            <div style={styles.scanRing} />
+            <div style={styles.eyebrow}>Analyse en cours</div>
+            <div style={{ marginTop: 18 }}>
+              {SCAN_STEPS.map((label, i) => (
+                <div
+                  key={i}
+                  style={{
+                    ...styles.scanLine,
+                    opacity: i <= scanIndex ? 1 : 0.25,
+                    animation: i === scanIndex ? "pulse 1s ease infinite" : "none",
+                  }}
+                >
+                  {label}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {step === "result" && (
+          <div style={{ animation: "fadeUp 0.5s ease" }}>
+            <div style={{ ...styles.center, marginBottom: 8 }}>
+              <ScentOrb percentages={percentages} />
+            </div>
+            <div style={{ ...styles.center, marginTop: 18 }}>
+              <div style={styles.eyebrow}>Ta signature olfactive</div>
+              <div style={styles.bigPct}>{topPct}%</div>
+              <h1 style={{ ...styles.h1, marginTop: 0 }}>{FAMILLES[top].label}</h1>
+              <p style={styles.lead}>{FAMILLES[top].desc}</p>
+              {genrePref && (
+                <div style={styles.genreTag}>
+                  {GENRE_OPTIONS.find((g) => g.value === genrePref)?.label}
+                </div>
+              )}
+            </div>
+
+            <RadarChart scores={scores} maxScore={maxScore} />
+
+            <div style={styles.recosSection}>
+              <div style={styles.recosLabel}>Sélectionnés pour ton profil</div>
+              {FAMILLES[top].recos.map((p, i) => {
+                const isOpen = openReco === i;
+                return (
+                  <div key={i} style={styles.recoCard}>
+                    <button
+                      style={styles.recoHeader}
+                      onClick={() => setOpenReco(isOpen ? null : i)}
+                    >
+                      <div style={{ ...styles.recoDot, background: FAMILLES[top].color }} />
+                      <div style={{ flex: 1, textAlign: "left" }}>
+                        <div style={styles.recoName}>{p.nom}</div>
+                        <div style={styles.recoBrand}>{p.marque}</div>
+                        <div style={styles.recoAccroche}>{p.accroche}</div>
+                      </div>
+                      <div style={{ ...styles.recoChevron, transform: isOpen ? "rotate(180deg)" : "none" }}>
+                        ⌄
+                      </div>
+                    </button>
+                    {isOpen && (
+                      <div style={styles.recoBody}>
+                        <p style={styles.recoHistoire}>{p.histoire}</p>
+                        <a href={p.lien} target="_blank" rel="noopener noreferrer" style={styles.recoBtn}>
+                          Découvrir ce parfum
+                        </a>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            <div style={{ ...styles.center }}>
+              <button style={styles.secondaryBtn} onClick={restart}>
+                Refaire le quiz
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+      <div style={styles.footerLinks}>
+        <a href="/a-propos" style={styles.footerLink}>
+          Pourquoi Aunez ?
+        </a>
+        <a href="/histoire" style={styles.footerLink}>
+          Histoire du parfum
+        </a>
       </div>
     </div>
   );
@@ -304,130 +603,254 @@ const styles = {
     width: "100%",
     background: "#08070c",
     display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
     justifyContent: "center",
-    padding: "24px",
+    padding: 24,
     fontFamily: "'Georgia', 'Iowan Old Style', serif",
     position: "relative",
     overflow: "hidden",
   },
-  vignette: {
+  aura: {
     position: "absolute",
     inset: 0,
-    background: "radial-gradient(circle at 50% 10%, rgba(201,147,47,0.14), transparent 60%)",
+    overflow: "hidden",
+  },
+  starLayer: {
+    position: "absolute",
+    inset: 0,
+    overflow: "hidden",
     pointerEvents: "none",
   },
-  wrap: {
+  grain: {
+    position: "absolute",
+    inset: 0,
+    backgroundImage:
+      "radial-gradient(rgba(255,255,255,0.025) 1px, transparent 1px)",
+    backgroundSize: "3px 3px",
+    pointerEvents: "none",
+  },
+  card: {
     position: "relative",
     width: "100%",
-    maxWidth: 560,
-    paddingTop: 20,
+    maxWidth: 480,
+    background: "rgba(20,15,26,0.6)",
+    backdropFilter: "blur(22px)",
+    WebkitBackdropFilter: "blur(22px)",
+    border: "1px solid rgba(245,240,230,0.14)",
+    borderRadius: 6,
+    padding: "40px 32px",
+    boxShadow: "0 20px 70px rgba(0,0,0,0.55)",
+    color: "#f5f0e6",
   },
-  back: {
-    display: "inline-block",
+  footerLink: {
+    position: "relative",
+    zIndex: 1,
     fontFamily: "'Helvetica Neue', Arial, sans-serif",
-    fontSize: 12.5,
-    color: "rgba(245,240,230,0.55)",
+    fontSize: 12,
+    color: "rgba(245,240,230,0.4)",
     textDecoration: "none",
-    marginBottom: 22,
+    letterSpacing: "0.04em",
   },
+  footerLinks: {
+    position: "relative",
+    zIndex: 1,
+    display: "flex",
+    gap: 20,
+    marginTop: 18,
+  },
+  center: { textAlign: "center" },
   eyebrow: {
     fontFamily: "'Helvetica Neue', Arial, sans-serif",
     fontSize: 11,
     letterSpacing: "0.2em",
     textTransform: "uppercase",
     color: "#c9932f",
-    marginBottom: 22,
+    marginBottom: 14,
   },
-  stage: { perspective: "1600px" },
-  bookShell: {
-    position: "relative",
-    minHeight: 300,
+  h1: { fontSize: 32, lineHeight: 1.2, margin: "0 0 14px", fontWeight: 400 },
+  h2: { fontSize: 22, lineHeight: 1.35, margin: "18px 0 24px", fontWeight: 400 },
+  lead: {
+    fontFamily: "'Helvetica Neue', Arial, sans-serif",
+    fontSize: 14.5,
+    lineHeight: 1.6,
+    color: "rgba(245,240,230,0.75)",
+    margin: "0 0 28px",
   },
-  book: {
-    borderRadius: 6,
-    padding: "36px 32px",
-    minHeight: 300,
-    textAlign: "center",
-    overflow: "hidden",
+  bigPct: {
+    fontSize: 52,
+    fontWeight: 300,
+    letterSpacing: "-0.02em",
+    color: "#c9932f",
+    margin: "6px 0 2px",
   },
-  bookLayer: {
-    position: "absolute",
-    inset: 0,
-    width: "100%",
-  },
-  texture: {
-    position: "absolute",
-    inset: 0,
-    pointerEvents: "none",
-  },
-  fold: {
-    position: "absolute",
-    inset: 0,
-    pointerEvents: "none",
-    transition: "opacity 0.3s ease",
-  },
-  iconWrap: { marginBottom: 14, position: "relative", display: "inline-block" },
-  iconZone: {
-    position: "absolute",
-    top: "-14px",
-    bottom: "-14px",
-    width: "50%",
-    background: "transparent",
-    border: "none",
-    padding: 0,
-  },
-  period: {
+  genreTag: {
+    display: "inline-block",
     fontFamily: "'Helvetica Neue', Arial, sans-serif",
     fontSize: 11,
-    letterSpacing: "0.1em",
-    marginBottom: 6,
-    position: "relative",
+    letterSpacing: "0.04em",
+    color: "rgba(245,240,230,0.55)",
+    background: "rgba(245,240,230,0.06)",
+    border: "1px solid rgba(245,240,230,0.15)",
+    borderRadius: 20,
+    padding: "5px 14px",
+    marginBottom: 24,
   },
-  era: {
-    fontSize: 22,
-    fontWeight: 400,
-    margin: "0 0 2px",
-    position: "relative",
+  primaryBtn: {
+    fontFamily: "'Helvetica Neue', Arial, sans-serif",
+    background: "#c9932f",
+    color: "#1b1420",
+    border: "none",
+    borderRadius: 2,
+    padding: "13px 30px",
+    fontSize: 13,
+    letterSpacing: "0.08em",
+    textTransform: "uppercase",
+    cursor: "pointer",
+    fontWeight: 600,
   },
-  title: {
+  secondaryBtn: {
+    fontFamily: "'Helvetica Neue', Arial, sans-serif",
+    background: "transparent",
+    color: "#f5f0e6",
+    border: "1px solid rgba(245,240,230,0.3)",
+    borderRadius: 2,
+    padding: "12px 26px",
+    fontSize: 13,
+    letterSpacing: "0.08em",
+    textTransform: "uppercase",
+    cursor: "pointer",
+    marginTop: 20,
+  },
+  progressTrack: {
+    height: 2,
+    width: "100%",
+    background: "rgba(245,240,230,0.15)",
+    borderRadius: 2,
+    overflow: "hidden",
+    marginBottom: 10,
+  },
+  progressFill: { height: "100%", background: "#c9932f", transition: "width 0.3s ease" },
+  stepLabel: {
+    fontFamily: "'Helvetica Neue', Arial, sans-serif",
+    fontSize: 11,
+    letterSpacing: "0.15em",
+    textTransform: "uppercase",
+    color: "rgba(245,240,230,0.5)",
+  },
+  optionsGrid: { display: "grid", gridTemplateColumns: "1fr", gap: 10 },
+  optionBtn: {
+    fontFamily: "'Helvetica Neue', Arial, sans-serif",
+    textAlign: "left",
+    background: "rgba(245,240,230,0.04)",
+    border: "1px solid rgba(245,240,230,0.15)",
+    borderRadius: 3,
+    padding: "14px 16px",
+    color: "#f5f0e6",
+    fontSize: 14.5,
+    cursor: "pointer",
+    transition: "border-color 0.2s ease",
+  },
+  scanRing: {
+    width: 64,
+    height: 64,
+    margin: "0 auto 20px",
+    borderRadius: "50%",
+    border: "2px solid rgba(245,240,230,0.15)",
+    borderTopColor: "#c9932f",
+    animation: "spin 1s linear infinite",
+  },
+  scanLine: {
     fontFamily: "'Helvetica Neue', Arial, sans-serif",
     fontSize: 13,
-    fontStyle: "italic",
-    marginBottom: 16,
-    opacity: 0.75,
-    position: "relative",
+    color: "rgba(245,240,230,0.8)",
+    marginBottom: 8,
+    transition: "opacity 0.3s ease",
   },
-  text: {
+  resultNote: {
     fontFamily: "'Helvetica Neue', Arial, sans-serif",
-    fontSize: 14,
-    lineHeight: 1.7,
-    margin: 0,
-    textAlign: "left",
-    opacity: 0.85,
-    position: "relative",
+    fontSize: 13,
+    lineHeight: 1.6,
+    color: "rgba(245,240,230,0.6)",
+    background: "rgba(245,240,230,0.04)",
+    border: "1px dashed rgba(245,240,230,0.2)",
+    borderRadius: 3,
+    padding: 14,
+    margin: "20px 0 8px",
   },
-  nav: {
+  recosSection: { margin: "24px 0 8px" },
+  recosLabel: {
+    fontFamily: "'Helvetica Neue', Arial, sans-serif",
+    fontSize: 11,
+    letterSpacing: "0.15em",
+    textTransform: "uppercase",
+    color: "rgba(245,240,230,0.5)",
+    marginBottom: 12,
+  },
+  recoCard: {
+    background: "rgba(245,240,230,0.04)",
+    border: "1px solid rgba(245,240,230,0.12)",
+    borderRadius: 4,
+    marginBottom: 10,
+    overflow: "hidden",
+  },
+  recoHeader: {
+    width: "100%",
     display: "flex",
     alignItems: "center",
-    justifyContent: "space-between",
-    marginTop: 20,
-    padding: "0 4px",
-  },
-  navBtn: {
-    fontFamily: "'Helvetica Neue', Arial, sans-serif",
-    fontSize: 12,
+    gap: 12,
     background: "transparent",
     border: "none",
-    color: "#f5f0e6",
+    padding: "14px 16px",
     cursor: "pointer",
-    letterSpacing: "0.02em",
+    color: "#f5f0e6",
   },
-  dots: { display: "flex", gap: 6 },
-  dot: {
-    width: 5,
-    height: 5,
-    borderRadius: "50%",
-    background: "#c9932f",
-    transition: "opacity 0.2s ease",
+  recoDot: { width: 8, height: 8, borderRadius: "50%", flexShrink: 0 },
+  recoName: {
+    fontFamily: "'Helvetica Neue', Arial, sans-serif",
+    fontSize: 14,
+    fontWeight: 600,
+  },
+  recoBrand: {
+    fontFamily: "'Helvetica Neue', Arial, sans-serif",
+    fontSize: 11.5,
+    color: "rgba(245,240,230,0.5)",
+    margin: "2px 0 4px",
+  },
+  recoAccroche: {
+    fontFamily: "'Helvetica Neue', Arial, sans-serif",
+    fontSize: 12.5,
+    fontStyle: "italic",
+    color: "rgba(245,240,230,0.7)",
+  },
+  recoChevron: {
+    fontSize: 16,
+    color: "rgba(245,240,230,0.4)",
+    transition: "transform 0.25s ease",
+    flexShrink: 0,
+  },
+  recoBody: {
+    padding: "0 16px 18px",
+    borderTop: "1px solid rgba(245,240,230,0.08)",
+    animation: "fadeUp 0.3s ease",
+  },
+  recoHistoire: {
+    fontFamily: "'Helvetica Neue', Arial, sans-serif",
+    fontSize: 13,
+    lineHeight: 1.65,
+    color: "rgba(245,240,230,0.75)",
+    margin: "14px 0 16px",
+  },
+  recoBtn: {
+    fontFamily: "'Helvetica Neue', Arial, sans-serif",
+    fontSize: 11.5,
+    letterSpacing: "0.05em",
+    textTransform: "uppercase",
+    color: "#c9932f",
+    border: "1px solid rgba(201,147,47,0.4)",
+    borderRadius: 3,
+    padding: "6px 12px",
+    textDecoration: "none",
+    flexShrink: 0,
   },
 };
