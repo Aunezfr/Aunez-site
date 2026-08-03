@@ -544,6 +544,9 @@ export default function App() {
           </div>
         )}
       </div>
+      <a href="/a-propos" style={styles.footerLink}>
+        Pourquoi Aunez ?
+      </a>
     </div>
   );
 }
@@ -554,6 +557,7 @@ const styles = {
     width: "100%",
     background: "#08070c",
     display: "flex",
+    flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
     padding: 24,
@@ -592,6 +596,16 @@ const styles = {
     padding: "40px 32px",
     boxShadow: "0 20px 70px rgba(0,0,0,0.55)",
     color: "#f5f0e6",
+  },
+  footerLink: {
+    position: "relative",
+    zIndex: 1,
+    marginTop: 18,
+    fontFamily: "'Helvetica Neue', Arial, sans-serif",
+    fontSize: 12,
+    color: "rgba(245,240,230,0.4)",
+    textDecoration: "none",
+    letterSpacing: "0.04em",
   },
   center: { textAlign: "center" },
   eyebrow: {
