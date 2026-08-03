@@ -25,6 +25,15 @@ export default function RootLayout({ children }) {
   return (
     <html lang="fr">
       <body style={{ margin: 0 }}>
+        <style>{`
+          html, body {
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            overscroll-behavior: none;
+            width: 100%;
+          }
+        `}</style>
         {children}
         <Analytics />
       </body>
