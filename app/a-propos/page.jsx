@@ -16,11 +16,10 @@ export default function APropos() {
         <h1 style={styles.h1}>Pourquoi Aunez</h1>
 
         <p style={styles.p}>
-          J'évolue depuis longtemps dans l'univers du parfum, et j'y ai fait un
-          constat qui ne me quitte plus&nbsp;: on choisit rarement un parfum,
-          on hérite d'une habitude. Celui que portait un proche, celui qu'on
-          nous a offert, celui qui était en rayon au bon moment. On garde
-          cette histoire-là, sans jamais prendre le temps d'écrire la sienne.
+          On choisit rarement un parfum. On hérite d'une habitude — celui
+          que portait un proche, celui qu'on nous a offert, celui qui
+          était en rayon au bon moment. On garde cette histoire-là, sans
+          jamais prendre le temps d'écrire la sienne.
         </p>
 
         <p style={styles.p}>
