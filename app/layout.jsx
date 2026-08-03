@@ -1,3 +1,5 @@
+import { Analytics } from "@vercel/analytics/next";
+
 export const viewport = {
   width: "device-width",
   initialScale: 1,
@@ -22,7 +24,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="fr">
-      <body style={{ margin: 0 }}>{children}</body>
+      <body style={{ margin: 0 }}>
+        {children}
+        <Analytics />
+      </body>
     </html>
   );
 }
