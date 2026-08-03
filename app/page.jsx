@@ -1020,10 +1020,9 @@ const styles = {
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    padding: 24,
+    padding: "48px 24px",
     fontFamily: "'Georgia', 'Iowan Old Style', serif",
     position: "relative",
-    overflow: "hidden",
   },
   aura: {
     position: "absolute",
