@@ -453,14 +453,16 @@ const styles = {
   stage: { perspective: "1600px" },
   bookShell: {
     position: "relative",
-    minHeight: 300,
+    minHeight: 500,
   },
   book: {
     borderRadius: 6,
     padding: "36px 32px",
-    minHeight: 300,
+    minHeight: 500,
     textAlign: "center",
-    overflow: "hidden",
+    overflowX: "hidden",
+    overflowY: "auto",
+    WebkitOverflowScrolling: "touch",
   },
   bookLayer: {
     position: "absolute",
