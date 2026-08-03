@@ -42,11 +42,6 @@ export default function Confidentialite() {
           Le site ne collectant actuellement aucune donnée personnelle,
           cette section sera complétée si cela évolue.
         </p>
-
-        <p style={styles.note}>
-          Cette page sera complétée dès que le statut légal de l'activité
-          sera formalisé.
-        </p>
       </div>
     </div>
   );
