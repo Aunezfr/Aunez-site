@@ -460,14 +460,20 @@ export default function App() {
         @keyframes floatC { 0%,100% { transform: translate(0,0) scale(1); } 33% { transform: translate(-60px,-40px) scale(1.2); } 66% { transform: translate(30px,-60px) scale(0.9); } }
         @keyframes floatD { 0%,100% { transform: translate(0,0) scale(1); } 33% { transform: translate(50px,-50px) scale(1.05); } 66% { transform: translate(70px,20px) scale(1.15); } }
         @keyframes twinkle { 0%,100% { opacity: 0.25; } 50% { opacity: 1; } }
+        @media (max-width: 420px) {
+          .aunez-card { padding: 28px 20px !important; }
+          .aunez-h1 { font-size: 26px !important; }
+          .aunez-h2 { font-size: 19px !important; }
+          .aunez-orb { transform: scale(0.85); }
+        }
       `}</style>
       <StarField revealCount={starsToReveal} />
       <AuraBackground percentages={percentages} />
-      <div style={styles.card}>
+      <div style={styles.card} className="aunez-card">
         {step === -1 && (
           <div style={styles.center}>
             <div style={styles.eyebrow}>Quiz olfactif</div>
-            <h1 style={styles.h1}>Quel est ton profil de parfum ?</h1>
+            <h1 style={styles.h1} className="aunez-h1">Quel est ton profil de parfum ?</h1>
             <p style={styles.lead}>
               Une odeur ne s'hérite pas, elle se choisit. Tes réponses
               dessinent ton histoire — et révèlent l'odeur qui te
@@ -485,7 +491,7 @@ export default function App() {
               <div style={{ ...styles.progressFill, width: `${(step / totalSteps) * 100}%` }} />
             </div>
             <div style={styles.stepLabel}>Question {step + 1} / {totalSteps}</div>
-            <h2 style={styles.h2}>{QUESTIONS[step].title}</h2>
+            <h2 style={styles.h2} className="aunez-h2">{QUESTIONS[step].title}</h2>
             <div style={styles.optionsGrid}>
               {QUESTIONS[step].options.map((opt, i) => (
                 <button
@@ -508,7 +514,7 @@ export default function App() {
               <div style={{ ...styles.progressFill, width: "100%" }} />
             </div>
             <div style={styles.stepLabel}>Dernière question</div>
-            <h2 style={styles.h2}>Le parfum que tu cherches, tu le veux plutôt…</h2>
+            <h2 style={styles.h2} className="aunez-h2">Le parfum que tu cherches, tu le veux plutôt…</h2>
             <div style={styles.optionsGrid}>
               {GENRE_OPTIONS.map((opt, i) => (
                 <button
@@ -548,13 +554,13 @@ export default function App() {
 
         {step === "result" && (
           <div style={{ animation: "fadeUp 0.5s ease" }}>
-            <div style={{ ...styles.center, marginBottom: 8 }}>
+            <div style={{ ...styles.center, marginBottom: 8 }} className="aunez-orb">
               <ScentOrb percentages={percentages} />
             </div>
             <div style={{ ...styles.center, marginTop: 18 }}>
               <div style={styles.eyebrow}>Ta signature olfactive</div>
               <div style={styles.bigPct}>{topPct}%</div>
-              <h1 style={{ ...styles.h1, marginTop: 0 }}>{FAMILLES[top].label}</h1>
+              <h1 style={{ ...styles.h1, marginTop: 0 }} className="aunez-h1">{FAMILLES[top].label}</h1>
               <p style={styles.lead}>{FAMILLES[top].desc}</p>
               {genrePref && (
                 <div style={styles.genreTag}>
