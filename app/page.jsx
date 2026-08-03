@@ -373,8 +373,8 @@ function useCountUp(target, durationMs = 900, start = false) {
 // --- App principale ----------------------------------------------------
 
 export default function App() {
-  const [step, setStep] = useState(-1); // -1 intro, 0..N-1 questions, "scanning", "result"
-  const [scores, setScores] = useState({ floral: 0, boise: 0, oriental: 0, frais: 0 });
+  const [step, setStep] = useState(-1); // -1 intro, 0..N-1 questions, "genre", "scanning", "result"
+  const [answers, setAnswers] = useState(Array(QUESTIONS.length).fill(null));
   const [scanIndex, setScanIndex] = useState(0);
   const [openReco, setOpenReco] = useState(null);
   const [genrePref, setGenrePref] = useState(null);
@@ -383,15 +383,21 @@ export default function App() {
   const totalSteps = QUESTIONS.length;
 
   function handleAnswer(points) {
-    setScores((prev) => {
-      const next = { ...prev };
-      Object.entries(points).forEach(([fam, val]) => {
-        next[fam] = Math.max(0, next[fam] + val);
-      });
+    setAnswers((prev) => {
+      const next = [...prev];
+      next[step] = points;
       return next;
     });
     const isLast = step === totalSteps - 1;
     setStep(isLast ? "genre" : step + 1);
+  }
+
+  function goBack() {
+    if (step === "genre") {
+      setStep(totalSteps - 1);
+    } else if (typeof step === "number" && step > 0) {
+      setStep(step - 1);
+    }
   }
 
   function handleGenre(value) {
@@ -413,7 +419,7 @@ export default function App() {
   }, [step]);
 
   function restart() {
-    setScores({ floral: 0, boise: 0, oriental: 0, frais: 0 });
+    setAnswers(Array(QUESTIONS.length).fill(null));
     setGenrePref(null);
     setStep(-1);
   }
@@ -437,6 +443,14 @@ export default function App() {
     }
   }
 
+  const scores = { floral: 0, boise: 0, oriental: 0, frais: 0 };
+  answers.forEach((a) => {
+    if (!a) return;
+    Object.entries(a).forEach(([fam, val]) => {
+      scores[fam] = Math.max(0, scores[fam] + val);
+    });
+  });
+
   const total = Object.values(scores).reduce((a, b) => a + b, 0) || 1;
   const percentages = Object.fromEntries(
     Object.entries(scores).map(([f, v]) => [f, Math.round((v / total) * 100)])
@@ -446,7 +460,7 @@ export default function App() {
   const top = sorted[0][0];
   const topPct = useCountUp(percentages[top], 1100, step === "result");
 
-  const answeredCount = typeof step === "number" ? step : totalSteps;
+  const answeredCount = typeof step === "number" ? Math.max(step, 0) : totalSteps;
   const starsToReveal = 20 + answeredCount * 22;
 
   return (
@@ -490,20 +504,39 @@ export default function App() {
             <div style={styles.progressTrack}>
               <div style={{ ...styles.progressFill, width: `${(step / totalSteps) * 100}%` }} />
             </div>
-            <div style={styles.stepLabel}>Question {step + 1} / {totalSteps}</div>
+            <div style={styles.stepRow}>
+              <div style={styles.stepLabel}>Question {step + 1} / {totalSteps}</div>
+              {step > 0 && (
+                <button style={styles.backBtn} onClick={goBack}>
+                  ← précédent
+                </button>
+              )}
+            </div>
             <h2 style={styles.h2} className="aunez-h2">{QUESTIONS[step].title}</h2>
             <div style={styles.optionsGrid}>
-              {QUESTIONS[step].options.map((opt, i) => (
-                <button
-                  key={i}
-                  style={styles.optionBtn}
-                  onClick={() => handleAnswer(opt.points)}
-                  onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#c9932f")}
-                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(245,240,230,0.15)")}
-                >
-                  {opt.label}
-                </button>
-              ))}
+              {QUESTIONS[step].options.map((opt, i) => {
+                const isSelected =
+                  answers[step] && JSON.stringify(opt.points) === JSON.stringify(answers[step]);
+                return (
+                  <button
+                    key={i}
+                    style={{
+                      ...styles.optionBtn,
+                      borderColor: isSelected ? "#c9932f" : "rgba(245,240,230,0.15)",
+                      background: isSelected ? "rgba(201,147,47,0.08)" : "rgba(245,240,230,0.04)",
+                    }}
+                    onClick={() => handleAnswer(opt.points)}
+                    onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#c9932f")}
+                    onMouseLeave={(e) =>
+                      (e.currentTarget.style.borderColor = isSelected
+                        ? "#c9932f"
+                        : "rgba(245,240,230,0.15)")
+                    }
+                  >
+                    {opt.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
         )}
@@ -513,16 +546,29 @@ export default function App() {
             <div style={styles.progressTrack}>
               <div style={{ ...styles.progressFill, width: "100%" }} />
             </div>
-            <div style={styles.stepLabel}>Dernière question</div>
+            <div style={styles.stepRow}>
+              <div style={styles.stepLabel}>Dernière question</div>
+              <button style={styles.backBtn} onClick={goBack}>
+                ← précédent
+              </button>
+            </div>
             <h2 style={styles.h2} className="aunez-h2">Le parfum que tu cherches, tu le veux plutôt…</h2>
             <div style={styles.optionsGrid}>
               {GENRE_OPTIONS.map((opt, i) => (
                 <button
                   key={i}
-                  style={styles.optionBtn}
+                  style={{
+                    ...styles.optionBtn,
+                    borderColor: genrePref === opt.value ? "#c9932f" : "rgba(245,240,230,0.15)",
+                    background:
+                      genrePref === opt.value ? "rgba(201,147,47,0.08)" : "rgba(245,240,230,0.04)",
+                  }}
                   onClick={() => handleGenre(opt.value)}
                   onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#c9932f")}
-                  onMouseLeave={(e) => (e.currentTarget.style.borderColor = "rgba(245,240,230,0.15)")}
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.borderColor =
+                      genrePref === opt.value ? "#c9932f" : "rgba(245,240,230,0.15)")
+                  }
                 >
                   {opt.label}
                 </button>
@@ -818,6 +864,20 @@ const styles = {
     letterSpacing: "0.15em",
     textTransform: "uppercase",
     color: "rgba(245,240,230,0.5)",
+  },
+  stepRow: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  backBtn: {
+    fontFamily: "'Helvetica Neue', Arial, sans-serif",
+    fontSize: 11,
+    background: "transparent",
+    border: "none",
+    color: "rgba(245,240,230,0.5)",
+    cursor: "pointer",
+    letterSpacing: "0.04em",
   },
   optionsGrid: { display: "grid", gridTemplateColumns: "1fr", gap: 10 },
   optionBtn: {
