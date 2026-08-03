@@ -15,11 +15,11 @@ export default function MentionsLegales() {
 
         <h2 style={styles.h2}>Édition du site</h2>
         <p style={styles.p}>
-          Le site Aunez (aunez.fr) est édité par [Nom / dénomination à
-          compléter une fois le statut légal créé], [statut juridique],
-          immatriculé sous le numéro SIRET [à compléter].
-          <br />
-          Contact : [adresse email à compléter]
+          Le site Aunez (aunez.fr) est édité à titre personnel. Conformément
+          à l'article 6-III de la loi n°2004-575 du 21 juin 2004 pour la
+          confiance dans l'économie numérique, l'identité de l'éditeur est
+          communicable à toute autorité judiciaire qui en ferait la demande
+          auprès de l'hébergeur mentionné ci-dessous.
         </p>
 
         <h2 style={styles.h2}>Hébergement</h2>
@@ -46,11 +46,6 @@ export default function MentionsLegales() {
           illustrations, mise en page) est la propriété d'Aunez, sauf
           mention contraire. Toute reproduction sans autorisation est
           interdite.
-        </p>
-
-        <p style={styles.note}>
-          Cette page sera complétée dès que le statut légal de l'activité
-          sera formalisé (auto-entreprise ou autre).
         </p>
       </div>
     </div>
