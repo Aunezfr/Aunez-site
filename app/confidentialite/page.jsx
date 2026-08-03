@@ -55,10 +55,9 @@ const styles = {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    padding: 24,
+    padding: "48px 24px",
     fontFamily: "'Georgia', 'Iowan Old Style', serif",
     position: "relative",
-    overflow: "hidden",
   },
   vignette: {
     position: "absolute",
